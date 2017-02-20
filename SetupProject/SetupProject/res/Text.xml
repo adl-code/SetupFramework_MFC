@@ -1,0 +1,62 @@
+﻿<xml encoding="utf-8" version="1.0">
+<text_table>
+	<text id="ok">
+		<entry>OK</entry>		
+	</text>
+	
+	<text id="cancel">
+		<entry>Hủy bỏ</entry>
+		<entry lang="en_us">Cancel</entry>
+	</text>
+
+  <text id="back">
+    <entry>Quay lại</entry>
+    <entry lang="en_us">Back</entry>
+  </text>
+  
+	<text id="next">
+		<entry>Tiếp tục</entry>
+		<entry lang="en_us">Next</entry>
+	</text>
+
+  <text id="finish">
+    <entry>Hoàn tất</entry>
+    <entry lang="en_us">Finish</entry>
+  </text>
+	
+	<text id="read_license">
+		<entry>Vui lòng đọc kĩ các điều khoản sau:</entry>
+		<entry lang="en_us">Please read the license carefully:</entry>
+	</text>
+	<text id="accept_eula">
+		<entry>&lt;B&gt;Tôi chấp nhận các điều khoản trong thỏa thuận sử dụng&lt;/B&gt;</entry>
+		<entry lang="en_us">&lt;B&gt;I accept the terms in the license agreement&lt;/B&gt;</entry>
+	</text>
+	
+	<text id="eula">
+		<entry>Thỏa thuận sử dụng</entry>
+		<entry lang="en_us">End User License Agreement</entry>
+	</text>
+
+  <text id="configuration">
+    <entry>Cấu hình</entry>
+    <entry lang="en_us">Configuration</entry>
+  </text>
+
+  <text id="make_default_browser">
+    <entry>Đặt làm trình duyệt mặc định</entry>
+    <entry lang="en_us">Make me your default browser</entry>
+  </text>
+
+  <text id="make_run_at_startup">
+    <entry>Tự động chạy khi khởi động hệ thống</entry>
+    <entry lang="en_us">Run me at system startup</entry>
+  </text>
+
+  <text id="create_desktop_shortcut">
+    <entry>Đặt biểu tượng ngoài màn hình</entry>
+    <entry lang="en_us">Create a shortcut at your Desktop</entry>
+  </text>
+  
+</text_table>
+</xml>

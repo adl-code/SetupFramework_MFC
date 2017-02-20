@@ -1,0 +1,50 @@
+body {
+	font-family: Arial;
+	background-color: #FFF;
+    font-size: 16px;
+    font-weight: lighter;
+}
+
+button {
+    background-color: #FF8600;
+	font-family: Arial;
+    font-weight: bold;
+    font-size: 16px;
+    color: #FFF;
+	text-align: center;
+    text-decoration: none;
+    border: none;
+    padding: 15px;
+}
+
+button:hover:enabled {
+    background-color: #FF6000;
+}
+button:disabled {  
+    background-color: #909090;
+    color: #666;
+    text-decoration: none;
+}
+
+#the_progress {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: grey;
+}
+
+#the_progress_bar {
+    width: 1%;
+    height: 20px;
+    background-color: #FF8000;
+}
+
+label {
+    font-size: 16px;
+    font-weight: lighter;
+}
+
+td {    
+    padding-bottom: 10px;
+    padding-top: 10px;
+}

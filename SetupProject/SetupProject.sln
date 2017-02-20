@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SetupProject", "SetupProject\SetupProject.vcxproj", "{52203177-776F-4BA2-B423-E28244C5F49F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_Offline|Win32 = Debug_Offline|Win32
+		Debug_Online|Win32 = Debug_Online|Win32
+		Release_Offline|Win32 = Release_Offline|Win32
+		Release_Online|Win32 = Release_Online|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52203177-776F-4BA2-B423-E28244C5F49F}.Debug_Offline|Win32.ActiveCfg = Debug_Offline|Win32
+		{52203177-776F-4BA2-B423-E28244C5F49F}.Debug_Offline|Win32.Build.0 = Debug_Offline|Win32
+		{52203177-776F-4BA2-B423-E28244C5F49F}.Debug_Online|Win32.ActiveCfg = Debug_Online|Win32
+		{52203177-776F-4BA2-B423-E28244C5F49F}.Debug_Online|Win32.Build.0 = Debug_Online|Win32
+		{52203177-776F-4BA2-B423-E28244C5F49F}.Release_Offline|Win32.ActiveCfg = Release_Offline|Win32
+		{52203177-776F-4BA2-B423-E28244C5F49F}.Release_Offline|Win32.Build.0 = Release_Offline|Win32
+		{52203177-776F-4BA2-B423-E28244C5F49F}.Release_Online|Win32.ActiveCfg = Release_Online|Win32
+		{52203177-776F-4BA2-B423-E28244C5F49F}.Release_Online|Win32.Build.0 = Release_Online|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

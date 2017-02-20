@@ -1,0 +1,16 @@
+﻿<xml encoding="utf-8" version="1.0">
+<setup_config scheme="default">
+	<scheme id="default">
+		<setup_screens>
+			<screen id="splash" resource="SPLASH_DLG"
+				splash_time="500"
+				fade_in_time="100"
+				fade_out_time="100"
+			/>
+			<screen id="eula" resource="EULA_DLG" />			
+			
+		</setup_screens>
+	</scheme>
+  
+</setup_config>
+</xml>
