@@ -176,11 +176,18 @@ std::vector<CMsXmlNode*> Utils::CMsXmlNode::GetChildren()
 		IXMLDOMNode *childNode;
 		if (SUCCEEDED(hr = children->get_item(i, &childNode)))
 		{
-			CMsXmlNode *node = new CMsXmlNode(childNode);
-			if (node)
-				childList.push_back(node);
-			else
-				childNode->Release();
+			DOMNodeType childNodeType;
+			if (SUCCEEDED(childNode->get_nodeType(&childNodeType)) && childNodeType == NODE_ELEMENT)
+			{
+				CMsXmlNode *node = new CMsXmlNode(childNode);
+				if (node)
+				{
+					childList.push_back(node);
+					childNode->AddRef();
+				}
+			}
+						
+			childNode->Release();
 		}
 	}
 		
@@ -205,24 +212,15 @@ _tstring Utils::CMsXmlNode::GetStringValue()
 {
 	HRESULT hr;
 	VARIANT val;
-	int nodeType;
-
+	
 	if (SUCCEEDED(hr = m_Node->get_nodeValue(&val)) && val.vt == VT_BSTR)
 		return UNICODE_TO_TSTRING(val.bstrVal);
-		
-	std::vector<CMsXmlNode*> children = GetChildren();
-	_tstring result = _T("");
 	
-	if (children.size() == 1)
-	{
-		nodeType = children[0]->GetType();
-		if (nodeType == NODE_TEXT)
-		{
-			result = children[0]->GetStringValue();
-		}
-	}
-	for (CMsXmlNode *child : children)
-		delete child;
+	_tstring result;
+	BSTR nodeText;
+	if (SUCCEEDED(hr = m_Node->get_text(&nodeText)))
+		result = nodeText;
+	
 	
 	return result;
 	
@@ -290,7 +288,7 @@ bool Utils::CMsXmlNode::GetAttribute(
 
 	bool found = false;
 	DOMNodeType nodeType;
-	if (SUCCEEDED(hr))
+	if (hr == S_OK)
 	{		
 		VARIANT nodeValue;
 		nodeValue.vt = VT_NULL;

@@ -16,8 +16,7 @@ class CEulaDlg :
 	DECLARE_DYNCREATE(CEulaDlg)
 
 public:
-	CEulaDlg(CWnd* pParent = NULL);   // standard constructor
-	CEulaDlg(LPCTSTR htmlResource, CWnd* parent = NULL); 
+	CEulaDlg(CWnd* pParent = NULL);   // standard constructor	
 	virtual ~CEulaDlg();
 // Overrides
 	HRESULT OnButtonNext(IHTMLElement *pElement);

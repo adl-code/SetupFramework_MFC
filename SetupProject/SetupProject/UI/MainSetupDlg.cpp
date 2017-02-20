@@ -11,16 +11,11 @@
 IMPLEMENT_DYNCREATE(CMainSetupDlg, CDHtmlDialog)
 
 CMainSetupDlg::CMainSetupDlg(CWnd* parent /*=NULL*/)
-: CBaseSetupDlg(CMainSetupDlg::IDD, _T("MainSetupDlg"), parent)
+: CBaseSetupDlg(CMainSetupDlg::IDD, parent)
 {
 
 }
 
-CMainSetupDlg::CMainSetupDlg(LPCTSTR htmlResource, CWnd *parent /*= NULL*/)
-: CBaseSetupDlg(CMainSetupDlg::IDD, htmlResource, parent)
-{
-
-}
 
 CMainSetupDlg::~CMainSetupDlg()
 {
@@ -33,7 +28,8 @@ void CMainSetupDlg::DoDataExchange(CDataExchange* pDX)
 
 BOOL CMainSetupDlg::OnInitDialog()
 {
-	CDHtmlDialog::OnInitDialog();
+	CBaseSetupDlg::OnInitDialog();
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -59,4 +55,30 @@ HRESULT CMainSetupDlg::OnButtonCancel(IHTMLElement* /*pElement*/)
 {
 	EndDialog(SETUP_CANCEL);
 	return S_OK;
+}
+
+
+void CMainSetupDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
+{
+	CBaseSetupDlg::OnDocumentComplete(pDisp, szUrl);
+
+	// TODO: Add your specialized code here and/or call the base class
+	if (szUrl && _tcslen(szUrl) > 0)
+		StartSetup();
+}
+
+void CMainSetupDlg::StartSetup()
+{
+	CSetupData *pSetupData = GetSetupData();
+	ASSERT(pSetupData);
+
+	CString statusText;
+
+#if defined ONLINE_INSTALLER
+	statusText = pSetupData->GetStringLoader()->LoadString("downloading_installer").c_str();
+#elif defined OFFLINE_INSTALLER
+	statusText = pSetupData->GetStringLoader()->LoadString("extracting_installer").c_str();
+#endif
+
+	DDX_DHtml_ElementText(_T("status"), DISPID_IHTMLELEMENT_INNERHTML, statusText, FALSE);
 }

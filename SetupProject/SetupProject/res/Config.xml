@@ -7,10 +7,41 @@
 				fade_in_time="100"
 				fade_out_time="100"
 			/>
-			<screen id="eula" resource="EULA_DLG" />			
-			
+      <screen id="config" resource="CONFIG_DLG" />
+			<screen id="eula" resource="EULA_DLG" />
+      <screen id="main" resource="MAIN_DLG" />
 		</setup_screens>
-	</scheme>
+    <text      
+      res_type="SETUP"
+      res_name="TEXT">
+    </text>
+    <installer>
+      <!-- configure online/offline installer here -->
+      <online_installer
+        manually_verify_server="false">
+        <installer url="path_to_generic_installer"/> <!-- Default installer, we will use this link in case no specific platform is specified -->
+        <installer url="path_to_x86_installer" platform="x86"/>
+        <installer url="path_to_amd64_installer" platform="amd64"/>
+        <trusted_certs>
+          <!-- 
+          List of trusted CERTs. This list is used only if "manually_verify_server" is turned on.
+          Each entry in the list points to a CERT embedded resource
+          -->
+          <cert res_type="CERT" res_name="CERT1" />
+          <cert res_type="CERT" res_name="CERT2" />
+        </trusted_certs>
+      </online_installer>
+      
+      <offline_installer>
+        <installer res_type="SETUP" res_name="INSTALLER"/> <!-- Default installer, we will use this link in case no specific platform is specified -->
+        <installer res_type="SETUP" res_name="INSTALLER_X86" platform="x86" compression="gzip"/>
+        <installer res_type="SETUP" res_name="INSTALLER_AMD64" platform="amd64" compression="zip"/>
+      </offline_installer>
+    </installer>
+    
+
+
+  </scheme>
   
 </setup_config>
 </xml>

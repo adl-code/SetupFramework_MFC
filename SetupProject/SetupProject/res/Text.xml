@@ -57,6 +57,15 @@
     <entry>Đặt biểu tượng ngoài màn hình</entry>
     <entry lang="en_us">Create a shortcut at your Desktop</entry>
   </text>
-  
+
+  <text id="downloading_installer">
+    <entry>Đang tải bộ cài đặt ...</entry>
+    <entry lang="en_us">Downloading online installer ...</entry>
+  </text>
+
+  <text id="extracting_installer">
+    <entry>Đang khởi tạo quá trình cài đặt ...</entry>
+    <entry lang="en_us">Preparing installation data ...</entry>
+  </text>
 </text_table>
 </xml>

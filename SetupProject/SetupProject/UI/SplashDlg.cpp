@@ -14,17 +14,7 @@
 IMPLEMENT_DYNCREATE(CSplashDlg, CDHtmlDialog)
 
 CSplashDlg::CSplashDlg(CWnd *parent /*= NULL*/)
-: CBaseSetupDlg(CSplashDlg::IDD, _T("SPLASH_DLG"), parent)
-, m_StartTime(0)
-, m_FadeInTime(0)
-, m_FadeOutTime(0)
-, m_SplashTime(0)
-{
-
-}
-
-CSplashDlg::CSplashDlg(LPCTSTR htmlResource, CWnd* parent /*=NULL*/)
-: CBaseSetupDlg(CSplashDlg::IDD, htmlResource, parent)
+: CBaseSetupDlg(CSplashDlg::IDD, parent)
 , m_StartTime(0)
 , m_FadeInTime(0)
 , m_FadeOutTime(0)
@@ -44,7 +34,7 @@ void CSplashDlg::DoDataExchange(CDataExchange* pDX)
 
 BOOL CSplashDlg::OnInitDialog()
 {
-	CDHtmlDialog::OnInitDialog();
+	CBaseSetupDlg::OnInitDialog();
 	// Make myself topmost
 	SetWindowPos(&wndTopMost, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 

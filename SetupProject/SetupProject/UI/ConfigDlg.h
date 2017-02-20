@@ -18,7 +18,7 @@ class CConfigDlg :
 
 public:
 	CConfigDlg(CWnd* parent = NULL); // standard constructor
-	CConfigDlg(LPCTSTR htmlResource, CWnd* parent = NULL); 
+	
 	virtual ~CConfigDlg();
 // Overrides
 	HRESULT OnButtonNext(IHTMLElement *pElement);

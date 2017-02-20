@@ -16,7 +16,7 @@ class CMainSetupDlg :
 
 public:
 	CMainSetupDlg(CWnd* parent = NULL);   // standard constructor
-	CMainSetupDlg(LPCTSTR htmlResource, CWnd *parent = NULL);
+	
 	virtual ~CMainSetupDlg();
 // Overrides
 	HRESULT OnButtonOK(IHTMLElement *pElement);
@@ -31,4 +31,8 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	DECLARE_DHTML_EVENT_MAP()
+public:
+	virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
+private:
+	void StartSetup();
 };

@@ -11,11 +11,7 @@ MySetup::CSetupData::CSetupData()
 , m_ShouldHideBorder(false)
 , m_ShouldBeTopMost(false)
 , m_StringLoader(NULL)
-, m_OnlineInstaller(false)
-, m_OfflineInstallerResTypeAmd64(NULL)
-, m_OfflineInstallerResTypeX86(NULL)
-, m_OfflineInstallerResNameAmd64(NULL)
-, m_OfflineInstallerResNameX86(NULL)
+, m_ShouldManuallyVerifyServer(false)
 {
 	// Add the main setup screen first
 	m_SetupScreens.push_back(SETUP_SCREEN_MAIN);
@@ -172,16 +168,6 @@ std::string MySetup::CSetupData::GetLanguageID()
 	return m_LanguageID;
 }
 
-void MySetup::CSetupData::SetOnlineInstallerMode(bool onlineInstaller)
-{
-	m_OnlineInstaller = onlineInstaller;
-}
-
-bool MySetup::CSetupData::IsOnlineInstaller()
-{
-	return m_OnlineInstaller;
-}
-
 void MySetup::CSetupData::SetDownloadUrlX86(__in LPCTSTR pszUrl)
 {
 	if (pszUrl) m_DownloadUrlX86 = pszUrl;
@@ -202,43 +188,65 @@ _tstring MySetup::CSetupData::GetDownloadUrlAmd64()
 	return m_DownloadUrlAmd64;
 }
 
-void MySetup::CSetupData::SetOfflineInstallerResTypeX86(LPCTSTR resType)
+void MySetup::CSetupData::SetOfflineInstallerX86(const RESOURCE_ENTRY &res)
 {
-	m_OfflineInstallerResTypeX86 = resType;
+	m_OfflineInstallerX86 = res;
 }
 
-LPCTSTR MySetup::CSetupData::GetOfflineInstallerResTypeX86()
+RESOURCE_ENTRY MySetup::CSetupData::GetOfflineInstallerX86()
 {
-	return m_OfflineInstallerResTypeX86;
+	return m_OfflineInstallerX86;
 }
 
-void MySetup::CSetupData::SetOfflineInstallerResTypeAmd64(LPCTSTR resType)
+void MySetup::CSetupData::SetOfflineInstallerAmd64(const RESOURCE_ENTRY &res)
 {
-	m_OfflineInstallerResTypeAmd64 = resType;
+	m_OfflineInstallerAmd64 = res;
 }
 
-LPCTSTR MySetup::CSetupData::GetOfflineInstallerResTypeAmd64()
+RESOURCE_ENTRY MySetup::CSetupData::GetOfflineInstallerAmd64()
 {
-	return m_OfflineInstallerResTypeAmd64;
+	return m_OfflineInstallerAmd64;
 }
 
-void MySetup::CSetupData::SetOfflineInstallerResNameX86(LPCTSTR resName)
+void MySetup::CSetupData::SetOfflineInstallerCompressionX86(LPCTSTR compression)
 {
-	m_OfflineInstallerResNameX86 = resName;
+	if (compression)
+		m_OfflineInstallerCompressionX86 = compression;
 }
 
-LPCTSTR MySetup::CSetupData::GetOfflineIntallerResNameX86()
+LPCTSTR MySetup::CSetupData::GetOfflineInstallerCompressionX86()
 {
-	return m_OfflineInstallerResNameX86;
+	return m_OfflineInstallerCompressionX86.c_str();
 }
 
-void MySetup::CSetupData::SetOfflineInstallerResNameAmd64(LPCTSTR resName)
+void MySetup::CSetupData::SetOfflineInstallerCompressionAmd64(LPCTSTR compression)
 {
-	m_OfflineInstallerResNameAmd64 = resName;
+	if (compression)
+		m_OfflineInstallerCompressionAmd64 = compression;
 }
 
-LPCTSTR MySetup::CSetupData::GetOfflineIntallerResNameAmd64()
+LPCTSTR MySetup::CSetupData::GetOfflineInstallerCompressionAmd64()
 {
-	return m_OfflineInstallerResNameAmd64;
+	return m_OfflineInstallerCompressionAmd64.c_str();
+}
+
+void MySetup::CSetupData::SetManuallyVerifyServer(bool manually)
+{
+	m_ShouldManuallyVerifyServer = manually;
+}
+
+bool MySetup::CSetupData::ShouldManuallyVerifyServer()
+{
+	return m_ShouldManuallyVerifyServer;
+}
+
+void MySetup::CSetupData::AddOnlineInstallerTrustedCERT(const RESOURCE_ENTRY &res)
+{
+	m_OnlineInstallerTrustedCERTs.push_back(res);
+}
+
+std::vector<RESOURCE_ENTRY> MySetup::CSetupData::GetOnlineInstallerTrustedCERTs()
+{
+	return m_OnlineInstallerTrustedCERTs;
 }
 

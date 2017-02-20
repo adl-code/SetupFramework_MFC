@@ -15,8 +15,7 @@ class CSplashDlg :
 	DECLARE_DYNCREATE(CSplashDlg)
 
 public:
-	CSplashDlg(CWnd *parent = NULL); // // standard constructor
-	CSplashDlg(LPCTSTR htmlResource, CWnd* pParent = NULL);   
+	CSplashDlg(CWnd *parent = NULL); // // standard constructor	
 	virtual ~CSplashDlg();
 
 // Dialog Data

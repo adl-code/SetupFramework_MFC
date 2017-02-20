@@ -12,18 +12,10 @@ IMPLEMENT_DYNCREATE(CConfigDlg, CDHtmlDialog)
 
 
 CConfigDlg::CConfigDlg(CWnd* parent /*= NULL*/)
-: CBaseSetupDlg(CConfigDlg::IDD, _T("CONFIG_DLG"), parent)
+: CBaseSetupDlg(CConfigDlg::IDD, parent)
 {
 
 }
-
-CConfigDlg::CConfigDlg(LPCTSTR htmlResource, CWnd* parent /*=NULL*/)
-: CBaseSetupDlg(CConfigDlg::IDD, htmlResource, parent)
-	
-{
-
-}
-
 
 CConfigDlg::~CConfigDlg()
 {
@@ -36,7 +28,7 @@ void CConfigDlg::DoDataExchange(CDataExchange* pDX)
 
 BOOL CConfigDlg::OnInitDialog()
 {
-	CDHtmlDialog::OnInitDialog();
+	CBaseSetupDlg::OnInitDialog();
 
 	CSetupData *pSetupData = GetSetupData();
 	ASSERT(pSetupData && pSetupData->GetStringLoader());

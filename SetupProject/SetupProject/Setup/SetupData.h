@@ -26,6 +26,18 @@ namespace MySetup
 {
 	typedef std::map<std::string, std::string> CPropertyMap;
 
+	typedef struct
+	{
+		HMODULE hModule;
+		_tstring resType;
+		_tstring resName;		
+
+		bool isEmpty()
+		{
+			return resName.empty() && resType.empty();
+		}
+	} RESOURCE_ENTRY;
+
 	class CSetupData
 	{
 	public:
@@ -52,15 +64,17 @@ namespace MySetup
 		_tstring m_DownloadUrlX86;
 		_tstring m_DownloadUrlAmd64;
 
-		// Installer mode: true for online mode, false for offline mode (drop from resource)
-		bool m_OnlineInstaller;
-
+		
 		// Offline installer resource
-		LPCTSTR m_OfflineInstallerResTypeX86;
-		LPCTSTR m_OfflineInstallerResNameX86;
+		RESOURCE_ENTRY m_OfflineInstallerX86;
+		_tstring m_OfflineInstallerCompressionX86;
 
-		LPCTSTR m_OfflineInstallerResTypeAmd64;
-		LPCTSTR m_OfflineInstallerResNameAmd64;
+		RESOURCE_ENTRY m_OfflineInstallerAmd64;		
+		_tstring m_OfflineInstallerCompressionAmd64;
+
+		bool m_ShouldManuallyVerifyServer;
+
+		std::vector<RESOURCE_ENTRY> m_OnlineInstallerTrustedCERTs;
 	public:
 		// Set user configuration
 		void SetUserConfig(
@@ -110,10 +124,7 @@ namespace MySetup
 		Utils::CStringLoader *GetStringLoader();
 		std::string GetLanguageID();
 
-		// Methods for online/offline installer
-		void SetOnlineInstallerMode(bool onlineInstaller);
-		bool IsOnlineInstaller();
-
+		// Installer configuration
 		void SetDownloadUrlX86(__in LPCTSTR pszUrl);
 		_tstring GetDownloadUrlX86();
 
@@ -121,16 +132,24 @@ namespace MySetup
 		_tstring GetDownloadUrlAmd64();
 
 
-		void SetOfflineInstallerResTypeX86(LPCTSTR resType);
-		LPCTSTR GetOfflineInstallerResTypeX86();
+		void SetOfflineInstallerX86(const RESOURCE_ENTRY &res);
+		RESOURCE_ENTRY GetOfflineInstallerX86();
 
-		void SetOfflineInstallerResTypeAmd64(LPCTSTR resType);
-		LPCTSTR GetOfflineInstallerResTypeAmd64();
+		void SetOfflineInstallerAmd64(const RESOURCE_ENTRY &res);
+		RESOURCE_ENTRY GetOfflineInstallerAmd64();
+			
 
-		void SetOfflineInstallerResNameX86(LPCTSTR resName);
-		LPCTSTR GetOfflineIntallerResNameX86();
+		void SetOfflineInstallerCompressionX86(LPCTSTR compression);
+		LPCTSTR GetOfflineInstallerCompressionX86();
 
-		void SetOfflineInstallerResNameAmd64(LPCTSTR resName);
-		LPCTSTR GetOfflineIntallerResNameAmd64();
+		void SetOfflineInstallerCompressionAmd64(LPCTSTR compression);
+		LPCTSTR GetOfflineInstallerCompressionAmd64();
+
+		void SetManuallyVerifyServer(bool manually);
+		bool ShouldManuallyVerifyServer();
+
+		void AddOnlineInstallerTrustedCERT(const RESOURCE_ENTRY &res);
+
+		std::vector<RESOURCE_ENTRY> GetOnlineInstallerTrustedCERTs();
 	};
 }

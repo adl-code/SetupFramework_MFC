@@ -6,13 +6,12 @@ BEGIN_MESSAGE_MAP(MySetup::CBaseSetupDlg, CDHtmlDialog)
 	
 END_MESSAGE_MAP()
 
-MySetup::CBaseSetupDlg::CBaseSetupDlg(UINT dlgID, LPCTSTR htmlResource, CWnd *parent)
-	: CDHtmlDialog(MAKEINTRESOURCE(dlgID), htmlResource, parent)
-	, m_SetupData(NULL)
+MySetup::CBaseSetupDlg::CBaseSetupDlg(UINT dlgID, CWnd *parent)
+: CDHtmlDialog(MAKEINTRESOURCE(dlgID), NULL, parent)
+, m_SetupData(NULL)
 {
 
 }
-
 
 void MySetup::CBaseSetupDlg::UpdateElementText(
 	__in IHTMLDocument2 *pDoc,
@@ -73,8 +72,14 @@ MySetup::CSetupData* MySetup::CBaseSetupDlg::GetSetupData()
 	return m_SetupData;
 }
 
-int MySetup::CBaseSetupDlg::DoSetup(CSetupData *pSetupData)
+int MySetup::CBaseSetupDlg::DoSetup(
+	__in CSetupData *pSetupData,
+	__in LPCSTR screenId)
 {
+	if (screenId == NULL || pSetupData == NULL) return SETUP_ERROR;
+
+	m_ScreenId = screenId;
+	
 	m_SetupData = pSetupData;
 	return DoModal();
 }
@@ -116,6 +121,7 @@ void MySetup::CBaseSetupDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 	CDHtmlDialog::OnDocumentComplete(pDisp, szUrl);
 
 	// TODO: Add your specialized code here and/or call the base class
+	if (szUrl == NULL || _tcslen(szUrl) == 0) return;
 
 	// Reload control text from text resource
 	HRESULT hr;
@@ -142,18 +148,21 @@ void MySetup::CBaseSetupDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 	}
 }
 
-HRESULT WINAPI MySetup::CBaseSetupDlg::ShowContextMenu(DWORD dwID, POINT *ppt, IUnknown *pcmdtReserved, IDispatch *pdispReserved)
-{
-	// Do nothing, just prevent context menu to be shown
-	return S_OK;
-}
-
-HRESULT WINAPI MySetup::CBaseSetupDlg::GetHostInfo(DOCHOSTUIINFO *pInfo)
-{	
-	return __super::GetHostInfo(pInfo);	
-}
-
 void MySetup::CBaseSetupDlg::OnClose()
 {
+	// Just do nothing to prevent the window to be closed by pressing ALT-F4
 
+}
+
+
+BOOL MySetup::CBaseSetupDlg::OnInitDialog()
+{
+	CDHtmlDialog::OnInitDialog();
+
+	// TODO: Add your message handler code here
+	std::string resourceID;
+	if (!m_SetupData->GetScreenConfig(m_ScreenId.c_str(), "resource", resourceID)) return SETUP_ERROR;
+		LoadFromResource(UTF8_TO_TSTRING(resourceID).c_str());
+
+	return TRUE;
 }

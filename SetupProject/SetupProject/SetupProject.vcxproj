@@ -255,7 +255,9 @@
     <Image Include="res\SetupProject.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="res\Config.xml" />
+    <Xml Include="res\Config.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="res\Text.xml">
       <SubType>Designer</SubType>
     </Xml>

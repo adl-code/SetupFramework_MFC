@@ -16,10 +16,7 @@
 
 void MySetup::InitSetup(
 	__inout CSetupData *setupData)
-{
-	// Initialize string loader and string resource
-	setupData->InitStringLoader(NULL, _T("SETUP"), _T("TEXT"));
-
+{	
 	// Parse config file
 	DWORD configStringLen;
 	const char *configString = Utils::LoadUtf8Resource(NULL, _T("SETUP"), _T("CONFIG"), configStringLen);
@@ -62,11 +59,6 @@ void MySetup::InitSetup(
 		}
 	}
 
-	// Configure dialogs to display
-	//setupData->AddSetupScreen(SETUP_SCREEN_SPLASH);		// Display splash
-	setupData->AddSetupScreen(SETUP_SCREEN_CONFIG);		// Configuration window
-	setupData->AddSetupScreen(SETUP_SCREEN_EULA);			// Then EULA
-	
 	setupData->SetHideBorder(true);
 	setupData->SetTopMost(true);
 
@@ -84,8 +76,7 @@ void MySetup::InitSetup(
 int MySetup::RunSetup(
 	__inout CSetupData *setupData)
 {
-	if (setupData == NULL)
-		return SETUP_ERROR;
+	if (setupData == NULL) return SETUP_ERROR;
 
 	// Loop through all setup steps
 	int iStep = 0;
@@ -100,31 +91,33 @@ int MySetup::RunSetup(
 		switch (setupScreens[iStep])
 		{
 		case SETUP_SCREEN_SPLASH:
-			// Display splash screen			
-			setupDlg = static_cast<CBaseSetupDlg*>(new CSplashDlg(_T("SPLASH_DLG")));
+			// Display splash screen
+			screenId = SCREEN_ID_SPLASH;
+			setupDlg = static_cast<CBaseSetupDlg*>(new CSplashDlg());
 			break;
 		case SETUP_SCREEN_CONFIG:
-			setupDlg = static_cast<CBaseSetupDlg*>(new CConfigDlg(_T("CONFIG_DLG")));
+			screenId = SETUP_SCREEN_ID_CONFIG;
+			setupDlg = static_cast<CBaseSetupDlg*>(new CConfigDlg());
 			break;
 		case SETUP_SCREEN_EULA:
 			// Display EULA
-			setupDlg = static_cast<CBaseSetupDlg*>(new CEulaDlg(_T("EULA_DLG")));
+			screenId = SETUP_SCREEN_ID_EULA;
+			setupDlg = static_cast<CBaseSetupDlg*>(new CEulaDlg());
 			break;
 		case SETUP_SCREEN_MAIN:
-			setupDlg = static_cast<CBaseSetupDlg*>(new CMainSetupDlg(_T("MAIN_SETUP_DLG")));
+			screenId = SETUP_SCREEN_ID_MAIN;
+			setupDlg = static_cast<CBaseSetupDlg*>(new CMainSetupDlg());
 			break;
 		default:
 			// Unprocessed steps
 			return SETUP_CANCEL;
 		}
 
-		if (setupDlg == NULL)
-			return SETUP_ERROR;
-		
-		
+		if (setupDlg == NULL) return SETUP_ERROR;
+				
 		setupData->SetCouldBeBack(prevStep != SETUP_SCREEN_SPLASH && setupScreens[iStep] != SETUP_SCREEN_MAIN);
 
-		int result = setupDlg->DoSetup(setupData);
+		int result = setupDlg->DoSetup(setupData, screenId.c_str());
 		delete setupDlg;
 		switch (result)
 		{

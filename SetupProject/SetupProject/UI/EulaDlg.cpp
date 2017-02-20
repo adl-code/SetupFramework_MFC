@@ -13,17 +13,11 @@ IMPLEMENT_DYNCREATE(CEulaDlg, CDHtmlDialog)
 
 
 CEulaDlg::CEulaDlg(CWnd* parent /*= NULL*/)
-: CBaseSetupDlg(CEulaDlg::IDD, _T("EULA_DLG"), parent)
+: CBaseSetupDlg(CEulaDlg::IDD, parent)
 {
 
 }
 
-
-CEulaDlg::CEulaDlg(LPCTSTR htmlResource, CWnd* parent /*=NULL*/)
-	: CBaseSetupDlg(CEulaDlg::IDD, htmlResource, parent)
-{
-
-}
 
 CEulaDlg::~CEulaDlg()
 {
@@ -36,7 +30,7 @@ void CEulaDlg::DoDataExchange(CDataExchange* pDX)
 
 BOOL CEulaDlg::OnInitDialog()
 {
-	CDHtmlDialog::OnInitDialog();
+	CBaseSetupDlg::OnInitDialog();
 
 	CSetupData *pSetupData = GetSetupData();
 	ASSERT(pSetupData);

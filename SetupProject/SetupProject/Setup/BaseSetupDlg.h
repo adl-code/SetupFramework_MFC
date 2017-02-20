@@ -9,7 +9,7 @@ namespace MySetup
 		public CDHtmlDialog
 	{
 	public:
-		CBaseSetupDlg(UINT dlgID, LPCTSTR htmlResource, CWnd *parent);
+		CBaseSetupDlg(UINT dlgID, CWnd *parent);	
 		virtual ~CBaseSetupDlg() {}
 		
 
@@ -20,23 +20,27 @@ namespace MySetup
 		// Provide methods for children to access internal data
 		CSetupData *GetSetupData();
 	public:
-		int DoSetup(CSetupData *pSetupData);
+		int DoSetup(
+			__in CSetupData *pSetupData,
+			__in LPCSTR screenId);
 
 		DECLARE_MESSAGE_MAP();
 		
 	private:
+		// Internal data
+		std::string m_ScreenId;
+
 		// Internal methods
 		void UpdateElementText(
 			__in IHTMLDocument2 *pDoc,
 			__in CSetupData *pSetupData);
-
-		// Event handling
 	public:
+		// Event handling
+	
 		virtual BOOL PreTranslateMessage(MSG* pMsg);
 		virtual void PreInitDialog();
-		virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
-		HRESULT WINAPI ShowContextMenu(DWORD dwID, POINT *ppt, IUnknown *pcmdtReserved, IDispatch *pdispReserved);
-		HRESULT WINAPI GetHostInfo(DOCHOSTUIINFO *pInfo);
+		virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);		
 		virtual void OnClose();				
+		virtual BOOL OnInitDialog();
 	};
 }
