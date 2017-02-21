@@ -65,9 +65,8 @@ void ConfigParser::ParseXmlSetupOfflineInstaller(
 {
 	if (setupData == NULL || offlineInstaller == NULL) return;
 
-	// Parse offline installers
-	RESOURCE_ENTRY genericRes, x86Res, amd64Res;	
-	_tstring genericCompression, x86Compression, amd64Compression;
+	// Parse offline installers	
+	CPropertyMap genericInstaller, x86Installer, amd64Installer;
 
 	for (Utils::CMsXmlNode *child : offlineInstaller->GetChildren())
 	{
@@ -76,66 +75,46 @@ void ConfigParser::ParseXmlSetupOfflineInstaller(
 
 		if (_tcsicmp(pChildName, _T("installer")) == 0)
 		{
-			// Parse the installer entry
-			_tstring resName;
-			_tstring resType;
+			// Parse the installer entry			
 			_tstring platform;
-			_tstring compression;
-			if (child->GetAttribute(_T("res_name"), resName) &&
-				child->GetAttribute(_T("res_type"), resType))
-			{
-				OsPlatform osPlatform = PlatformUnknown;
-				if (child->GetAttribute(_T("platform"), platform))
-					osPlatform = ConfigParser::ParsePlatform(platform.c_str());
-				child->GetAttribute(_T("compression"), compression);
+			
+			OsPlatform osPlatform = PlatformUnknown;
+			if (child->GetAttribute(_T("platform"), platform))
+				osPlatform = ConfigParser::ParsePlatform(platform.c_str());
 
-				switch (osPlatform)
-				{
-				case PlatformAmd64:
-					amd64Res.resType = resType;
-					amd64Res.resName = resName;
-					amd64Compression = compression;
-					break;
-				case PlatformX86:
-					x86Res.resType = resType;
-					x86Res.resName = resName;
-					x86Compression = compression;
-					break;
-				default:
-					genericRes.resName = resName;
-					genericRes.resType = resType;
-					genericCompression = compression;
-					break;
-				}
-			}		
+			CPropertyMap *props;
+			switch (osPlatform)
+			{
+			case PlatformAmd64:
+				props = &amd64Installer;
+				break;
+			case PlatformX86:
+				props = &x86Installer;
+				break;
+			default:
+				props = &genericInstaller;
+				break;
+			}
+			for (auto item : child->GetAttributes())
+			{
+				(*props)[TSTRING_TO_UTF8(item.first)] = TSTRING_TO_UTF8(item.second);
+			}
 		}
 
 		delete child;
 	}
 
 	// If there is no installer for the specific platforms, use the generic installer instead
-	if (amd64Res.isEmpty())
-	{
-		setupData->SetOfflineInstallerAmd64(genericRes);
-		setupData->SetOfflineInstallerCompressionAmd64(genericCompression.c_str());
-	}
-	else
-	{
-		setupData->SetOfflineInstallerAmd64(amd64Res);
-		setupData->SetOfflineInstallerCompressionAmd64(amd64Compression.c_str());
-	}
-
-	if (x86Res.isEmpty())
-	{
-		setupData->SetOfflineInstallerX86(genericRes);
-		setupData->SetOfflineInstallerCompressionX86(genericCompression.c_str());
-	}
-	else
-	{
-		setupData->SetOfflineInstallerX86(x86Res);
-		setupData->SetOfflineInstallerCompressionX86(x86Compression.c_str());
-	}
+	if (amd64Installer.find("res_name") == amd64Installer.end() ||
+		amd64Installer.find("res_type") == amd64Installer.end())
+		amd64Installer = genericInstaller;
+	
+	if (x86Installer.find("res_name") == x86Installer.end() ||
+		x86Installer.find("res_type") == x86Installer.end())
+		x86Installer = genericInstaller;
 		
+	setupData->SetSetupConfig(SETUP_CFG_OFFLINE_INSTALLER_AMD64, amd64Installer);
+	setupData->SetSetupConfig(SETUP_CFG_OFFLINE_INSTALLER_X86, x86Installer);
 }
 
 void ConfigParser::ParseXmlSetupOnlineInstaller(
@@ -145,9 +124,7 @@ void ConfigParser::ParseXmlSetupOnlineInstaller(
 	if (setupData == NULL || onlineInstaller == NULL) return;
 
 	// Parse online installers
-	_tstring genericUrl;
-	_tstring x86Url;
-	_tstring amd64Url;
+	CPropertyMap genericInstaller, x86Installer, amd64Installer;
 
 	std::vector<RESOURCE_ENTRY> trustedCERTs;
 
@@ -159,30 +136,28 @@ void ConfigParser::ParseXmlSetupOnlineInstaller(
 		if (_tcsicmp(pChildName, _T("installer")) == 0)
 		{
 			// Parse the installer entry
-			_tstring url;
+			CPropertyMap *props;
 			_tstring platform;
-			_tstring compression;
 
-			if (child->GetAttribute(_T("url"), url))
+			OsPlatform osPlatform = PlatformUnknown;
+			if (child->GetAttribute(_T("platform"), platform))
+				osPlatform = ConfigParser::ParsePlatform(platform.c_str());			
+			
+			switch (osPlatform)
 			{
-				OsPlatform osPlatform = PlatformUnknown;
-				if (child->GetAttribute(_T("platform"), platform))
-					osPlatform = ConfigParser::ParsePlatform(platform.c_str());
-				child->GetAttribute(_T("compression"), compression);
-
-				switch (osPlatform)
-				{
-				case PlatformAmd64:
-					amd64Url = url;
-					break;
-				case PlatformX86:
-					x86Url = url;
-					break;
-				default:
-					genericUrl = url;
-					break;
-				}
+			case PlatformAmd64:
+				props = &amd64Installer;
+				break;
+			case PlatformX86:
+				props = &x86Installer;
+				break;
+			default:
+				props = &genericInstaller;
+				break;
 			}
+			for (auto i : child->GetAttributes())
+				(*props)[TSTRING_TO_UTF8(i.first)] = TSTRING_TO_UTF8(i.second);
+			
 		}
 		else if (_tcsicmp(pChildName, _T("trusted_certs")) == 0)
 		{
@@ -205,15 +180,14 @@ void ConfigParser::ParseXmlSetupOnlineInstaller(
 	}
 
 	// If there is no installer for the specific platforms, use the generic installer instead
-	if (x86Url.empty())
-		setupData->SetDownloadUrlX86(genericUrl.c_str());
-	else
-		setupData->SetDownloadUrlX86(x86Url.c_str());
+	if (x86Installer.find("url") == x86Installer.end())
+		x86Installer = genericInstaller;
+	
+	if (amd64Installer.find("url") == amd64Installer.end())
+		amd64Installer = genericInstaller;
 
-	if (amd64Url.empty())
-		setupData->SetDownloadUrlAmd64(genericUrl.c_str());
-	else
-		setupData->SetDownloadUrlAmd64(amd64Url.c_str());
+	setupData->GetSetupConfig(SETUP_CFG_ONLINE_INSTALLER_AMD64, amd64Installer);
+	setupData->GetSetupConfig(SETUP_CFG_ONLINE_INSTALLER_X86, x86Installer);
 
 	_tstring configValue;
 	bool manualVerification = false;

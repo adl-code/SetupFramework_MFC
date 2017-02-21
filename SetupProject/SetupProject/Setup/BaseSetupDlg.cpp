@@ -166,3 +166,14 @@ BOOL MySetup::CBaseSetupDlg::OnInitDialog()
 
 	return TRUE;
 }
+
+HRESULT WINAPI MySetup::CBaseSetupDlg::ShowContextMenu(DWORD dwID, POINT *ppt, IUnknown *pcmdtReserved, IDispatch *pdispReserved)
+{
+#if defined _DEBUG || defined DEBUG
+	return __super::ShowContextMenu(dwID, ppt, pcmdtReserved, pdispReserved);
+#else
+
+	// Just do nothing to prevent displaying context-menu
+	return S_OK;
+#endif
+}

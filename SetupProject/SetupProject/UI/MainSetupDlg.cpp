@@ -6,6 +6,16 @@
 #include "UI/MainSetupDlg.h"
 
 
+// Using user defined message to update UI
+// WPARAM: UI component to update
+// LPARAM: other param
+
+#define UPDATE_STATUS_TEXT	1
+#define UPDATE_ERROR_TEXT	2
+#define UPDATE_PROGRESS		3		// LPARAM: percentage
+
+#define WM_UPDATE_UI		(WM_USER + 10)
+
 // CMainSetupDlg dialog
 
 IMPLEMENT_DYNCREATE(CMainSetupDlg, CDHtmlDialog)
@@ -34,6 +44,7 @@ BOOL CMainSetupDlg::OnInitDialog()
 }
 
 BEGIN_MESSAGE_MAP(CMainSetupDlg, CDHtmlDialog)
+	ON_MESSAGE(WM_UPDATE_UI, &CMainSetupDlg::OnUpdateUI)
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(CMainSetupDlg)
@@ -69,16 +80,86 @@ void CMainSetupDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 
 void CMainSetupDlg::StartSetup()
 {
-	CSetupData *pSetupData = GetSetupData();
-	ASSERT(pSetupData);
 
-	CString statusText;
+}
 
-#if defined ONLINE_INSTALLER
-	statusText = pSetupData->GetStringLoader()->LoadString("downloading_installer").c_str();
-#elif defined OFFLINE_INSTALLER
-	statusText = pSetupData->GetStringLoader()->LoadString("extracting_installer").c_str();
-#endif
+void CMainSetupDlg::UpdateStatus(__in LPCTSTR statusText)
+{
+	if (statusText && IsWindow(this->GetSafeHwnd()))
+	{
+		m_StatusText = statusText;
+		PostMessage(WM_UPDATE_UI, UPDATE_STATUS_TEXT);
+	}
+}
 
-	DDX_DHtml_ElementText(_T("status"), DISPID_IHTMLELEMENT_INNERHTML, statusText, FALSE);
+void CMainSetupDlg::UpdateProgress(DWORD percentage)
+{
+	if (!IsWindow(this->GetSafeHwnd())) return;
+	PostMessage(WM_UPDATE_UI, UPDATE_PROGRESS, (LPARAM)percentage);
+}
+
+void CMainSetupDlg::OnError(__in LPCTSTR errorText)
+{
+	if (errorText && IsWindow(this->GetSafeHwnd()))
+	{
+		m_ErrorText = errorText;
+		PostMessage(WM_UPDATE_UI, UPDATE_ERROR_TEXT);
+	}
+}
+
+void CMainSetupDlg::OnFinish(int setupResult)
+{
+	
+}
+
+void CMainSetupDlg::SetSetupProgress(DWORD percentage)
+{
+	CString widthText;
+	widthText.Format(_T("%d%%"), percentage > 100 ? 100 : percentage);
+
+	VARIANT withProp;
+	withProp.vt = VT_BSTR;
+	withProp.bstrVal = widthText.GetBuffer();
+
+	HRESULT hr;
+	IHTMLElement *pStatusBar = NULL;
+	if (SUCCEEDED(hr = GetElementInterface(_T("the_progress_bar"), __uuidof(pStatusBar), (void**)&pStatusBar) && pStatusBar))
+	{
+		IHTMLStyle *pStyle = NULL;
+		
+		if (SUCCEEDED(hr = pStatusBar->get_style(&pStyle)) && pStyle)		
+		{	
+			hr = pStyle->setAttribute(_T("width"), withProp);
+			pStyle->Release();
+		}
+	
+		pStatusBar->Release();
+	}	
+}
+
+
+void CMainSetupDlg::SetSetupStatus(LPCTSTR pStatus)
+{
+	if (pStatus == NULL) return;
+
+	CString status = pStatus;
+	DDX_DHtml_ElementText(_T("status"), DISPID_IHTMLELEMENT_INNERHTML, status, FALSE);
+}
+
+
+// Handling user defined message to update UI
+LRESULT CMainSetupDlg::OnUpdateUI(WPARAM wParam, LPARAM lParam)
+{
+	switch (wParam)
+	{
+	case UPDATE_STATUS_TEXT:
+		SetSetupStatus(m_StatusText.c_str());
+		break;
+	case UPDATE_ERROR_TEXT:
+		break;
+	case UPDATE_PROGRESS:
+		SetSetupProgress((DWORD)lParam);
+		break;
+	}
+	return 0;
 }

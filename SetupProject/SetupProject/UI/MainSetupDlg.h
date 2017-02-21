@@ -10,7 +10,8 @@
 using namespace MySetup;
 
 class CMainSetupDlg :
-	public CBaseSetupDlg
+	public CBaseSetupDlg,
+	public CSetupObserver
 {
 	DECLARE_DYNCREATE(CMainSetupDlg)
 
@@ -25,6 +26,9 @@ public:
 // Dialog Data
 	enum { IDD = IDD_MAIN_SETUP_DIALOG };
 
+	_tstring m_StatusText;
+	_tstring m_ErrorText;
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
@@ -35,4 +39,20 @@ public:
 	virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
 private:
 	void StartSetup();
+	void SetSetupProgress(DWORD percentage);
+	void SetSetupStatus(LPCTSTR pStatus);
+	
+public:
+	// Implement the CSetupObserver interface
+	virtual void UpdateStatus(__in LPCTSTR statusText);
+
+	virtual void UpdateProgress(DWORD percentage);
+
+	virtual void OnError(__in LPCTSTR errorText);
+
+	virtual void OnFinish(int setupResult);
+
+	// Handling user defined message to update UI
+	LRESULT OnUpdateUI(WPARAM wParam, LPARAM lParam);
+
 };

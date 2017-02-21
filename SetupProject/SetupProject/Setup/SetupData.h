@@ -26,6 +26,24 @@ namespace MySetup
 {
 	typedef std::map<std::string, std::string> CPropertyMap;
 
+	class CSetupObserver
+	{
+	public:
+		virtual ~CSetupObserver() {};
+	public:
+		virtual void UpdateStatus(
+			__in LPCTSTR statusText) = 0;
+
+		virtual void UpdateProgress(
+			DWORD percentage) = 0;
+
+		virtual void OnError(
+			__in LPCTSTR errorText) = 0;
+
+		virtual void OnFinish(int setupResult) = 0;
+
+	};
+
 	typedef struct
 	{
 		HMODULE hModule;
@@ -45,7 +63,11 @@ namespace MySetup
 		~CSetupData();
 	private:
 		// Class data
-		CPropertyMap m_SetupConfig;
+		CPropertyMap m_UserConfig;
+
+		
+		std::map<std::string, CPropertyMap> m_SetupConfig;
+
 		std::map<std::string, CPropertyMap> m_ScreenConfig;
 		
 		bool m_ShouldHideBorder; // Hide setup screen's border
@@ -59,22 +81,13 @@ namespace MySetup
 		bool m_ShouldShowFinalScreen; // Show final screen indicating that setup succeeded
 
 		Utils::CStringLoader *m_StringLoader;
-
-		// URL for online installer
-		_tstring m_DownloadUrlX86;
-		_tstring m_DownloadUrlAmd64;
-
-		
-		// Offline installer resource
-		RESOURCE_ENTRY m_OfflineInstallerX86;
-		_tstring m_OfflineInstallerCompressionX86;
-
-		RESOURCE_ENTRY m_OfflineInstallerAmd64;		
-		_tstring m_OfflineInstallerCompressionAmd64;
-
+				
+		// Data for manual server verification
 		bool m_ShouldManuallyVerifyServer;
-
 		std::vector<RESOURCE_ENTRY> m_OnlineInstallerTrustedCERTs;
+
+		HANDLE m_hStopEvent;
+
 	public:
 		// Set user configuration
 		void SetUserConfig(
@@ -113,6 +126,27 @@ namespace MySetup
 			__in const char *configName,
 			__out std::string &configValue);
 
+
+		// Get/set setup config
+		void SetSetupConfig(
+			__in const char *section,
+			__in const char *configName,
+			__in const char *configValue);
+
+		void SetSetupConfig(
+			__in const char *section,
+			__in const CPropertyMap& config);
+
+		bool GetSetupConfig(
+			__in const char *section,
+			__in const char *configName,
+			__out std::string &configValue);
+
+		bool GetSetupConfig(
+			__in const char *section,
+			__out CPropertyMap& config);
+		
+
 		void InitStringLoader(
 			__in HMODULE resModule,
 			__in LPCTSTR resType,
@@ -124,32 +158,14 @@ namespace MySetup
 		Utils::CStringLoader *GetStringLoader();
 		std::string GetLanguageID();
 
-		// Installer configuration
-		void SetDownloadUrlX86(__in LPCTSTR pszUrl);
-		_tstring GetDownloadUrlX86();
-
-		void SetDownloadUrlAmd64(__in LPCTSTR pszUrl);
-		_tstring GetDownloadUrlAmd64();
-
-
-		void SetOfflineInstallerX86(const RESOURCE_ENTRY &res);
-		RESOURCE_ENTRY GetOfflineInstallerX86();
-
-		void SetOfflineInstallerAmd64(const RESOURCE_ENTRY &res);
-		RESOURCE_ENTRY GetOfflineInstallerAmd64();
-			
-
-		void SetOfflineInstallerCompressionX86(LPCTSTR compression);
-		LPCTSTR GetOfflineInstallerCompressionX86();
-
-		void SetOfflineInstallerCompressionAmd64(LPCTSTR compression);
-		LPCTSTR GetOfflineInstallerCompressionAmd64();
-
 		void SetManuallyVerifyServer(bool manually);
 		bool ShouldManuallyVerifyServer();
 
 		void AddOnlineInstallerTrustedCERT(const RESOURCE_ENTRY &res);
 
 		std::vector<RESOURCE_ENTRY> GetOnlineInstallerTrustedCERTs();
+				
+		void StopInstall();
+		bool ShouldStop(DWORD timeout /* milliseconds */);
 	};
 }

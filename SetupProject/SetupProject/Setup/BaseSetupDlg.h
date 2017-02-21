@@ -42,5 +42,6 @@ namespace MySetup
 		virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);		
 		virtual void OnClose();				
 		virtual BOOL OnInitDialog();
+		virtual HRESULT WINAPI ShowContextMenu(DWORD dwID, POINT *ppt, IUnknown *pcmdtReserved, IDispatch *pdispReserved);
 	};
 }

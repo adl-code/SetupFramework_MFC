@@ -12,7 +12,9 @@
 #include "Utils/ResourceLoader.h"
 #include "Utils/HttpDownloader.h"
 
-
+bool RunMainSetup(
+	__inout CSetupData *setupData,
+	__in CSetupObserver *setupObserver);
 
 void MySetup::InitSetup(
 	__inout CSetupData *setupData)
@@ -61,15 +63,6 @@ void MySetup::InitSetup(
 
 	setupData->SetHideBorder(true);
 	setupData->SetTopMost(true);
-
-	
-	Utils::CHttpDownloader downloader;
-	DWORD httpCode;
-	_tstring httpMsg;
-	LPCTSTR pszUrl = _T("http://192.168.1.33/version/ClientList.txt");
-	downloader.AddAcceptType(_T("text/*"));
-	downloader.Download(pszUrl, NULL, NULL, &httpCode, &httpMsg);
-	
 }
 
 
@@ -88,6 +81,8 @@ int MySetup::RunSetup(
 	{
 		CBaseSetupDlg *setupDlg = NULL;
 		std::string screenId;
+		CSetupObserver *setupObserver = NULL;
+
 		switch (setupScreens[iStep])
 		{
 		case SETUP_SCREEN_SPLASH:
@@ -105,8 +100,12 @@ int MySetup::RunSetup(
 			setupDlg = static_cast<CBaseSetupDlg*>(new CEulaDlg());
 			break;
 		case SETUP_SCREEN_MAIN:
-			screenId = SETUP_SCREEN_ID_MAIN;
-			setupDlg = static_cast<CBaseSetupDlg*>(new CMainSetupDlg());
+			screenId = SETUP_SCREEN_ID_MAIN;			
+			{
+				CMainSetupDlg *mainDlg = new CMainSetupDlg();
+				setupObserver = static_cast<CSetupObserver*>(mainDlg);
+				setupDlg = static_cast<CBaseSetupDlg*>(mainDlg);
+			}			
 			break;
 		default:
 			// Unprocessed steps
@@ -116,9 +115,17 @@ int MySetup::RunSetup(
 		if (setupDlg == NULL) return SETUP_ERROR;
 				
 		setupData->SetCouldBeBack(prevStep != SETUP_SCREEN_SPLASH && setupScreens[iStep] != SETUP_SCREEN_MAIN);
-
-		int result = setupDlg->DoSetup(setupData, screenId.c_str());
+		int result = SETUP_OK;
+		if (setupObserver)
+		{
+			if (!RunMainSetup(setupData, setupObserver))
+				result = SETUP_ERROR;
+		}
+		
+		if (result == SETUP_OK)
+			result = setupDlg->DoSetup(setupData, screenId.c_str());
 		delete setupDlg;
+
 		switch (result)
 		{
 		case SETUP_OK:
@@ -139,3 +146,60 @@ int MySetup::RunSetup(
 	return SETUP_OK;
 }
 
+typedef struct
+{
+	CSetupData *setupData;
+	CSetupObserver *setupObserver;
+} SETUP_THREAD_DATA;
+
+
+void SetupThread(SETUP_THREAD_DATA *pData)
+{
+	Sleep(300);
+	Utils::CStringLoader *stringLoader = pData->setupData->GetStringLoader();
+	std::string langID = pData->setupData->GetLanguageID();
+	LPCSTR pLangID = langID.c_str();
+
+	pData->setupObserver->UpdateStatus(stringLoader->LoadString(SID_DOWNLOADING_INSTALLER, pLangID).c_str());
+
+	for (int i = 0; i < 10; i++)
+	{
+		pData->setupObserver->UpdateProgress((i + 1) * 10);	
+		Sleep(1000);
+	}
+}
+
+DWORD WINAPI MainSetupThread(LPVOID lParam)
+{
+	if (lParam)
+	{
+		SETUP_THREAD_DATA *pData = (SETUP_THREAD_DATA*)lParam;
+		SetupThread(pData);
+		delete pData;
+	}
+	return 0;
+}
+
+bool RunMainSetup(
+	__inout CSetupData *setupData,
+	__in CSetupObserver *setupObserver)
+{
+	if (setupData == NULL || setupObserver == NULL) return false;
+	SETUP_THREAD_DATA *pData = new SETUP_THREAD_DATA();
+	if (pData == NULL) return false;
+
+	pData->setupData = setupData;
+	pData->setupObserver = setupObserver;
+	HANDLE hThread = CreateThread(
+		NULL,
+		0,
+		&MainSetupThread,
+		pData,
+		0,
+		NULL);
+
+	if (hThread == NULL) return false;
+
+	CloseHandle(hThread);
+	return true;
+}
