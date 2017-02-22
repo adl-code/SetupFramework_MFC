@@ -37,6 +37,9 @@
     <Filter Include="Resource Files\SETUP">
       <UniqueIdentifier>{11af60ab-9f7b-4aa0-bfa5-697abe1ab0b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Html_Yandex">
+      <UniqueIdentifier>{7cac2791-aaef-459d-baa1-44ba8896d97c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SetupProject.h">
@@ -180,9 +183,6 @@
     <None Include="res\ConfigDlg.htm">
       <Filter>Resource Files\Html</Filter>
     </None>
-    <None Include="res\MyStyles.css">
-      <Filter>Resource Files\Html</Filter>
-    </None>
     <None Include="res\MainSetupDlg.htm">
       <Filter>Resource Files\Html</Filter>
     </None>
@@ -192,6 +192,18 @@
     </None>
     <None Include="res\MsgDlg.htm">
       <Filter>Resource Files\Html</Filter>
+    </None>
+    <None Include="res\ConfigDlg_Yandex.htm">
+      <Filter>Resource Files\Html_Yandex</Filter>
+    </None>
+    <None Include="res\MyStyle.css">
+      <Filter>Resource Files\Html</Filter>
+    </None>
+    <None Include="res\YandexStyle.css">
+      <Filter>Resource Files\Html_Yandex</Filter>
+    </None>
+    <None Include="res\MainSetupDlg_Yandex.htm">
+      <Filter>Resource Files\Html_Yandex</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -207,6 +219,9 @@
       <Filter>Resource Files\SETUP</Filter>
     </Xml>
     <Xml Include="res\Text.xml">
+      <Filter>Resource Files\SETUP</Filter>
+    </Xml>
+    <Xml Include="res\Text_Yandex.xml">
       <Filter>Resource Files\SETUP</Filter>
     </Xml>
   </ItemGroup>

@@ -244,6 +244,9 @@
     <None Include="res\ConfigDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="res\ConfigDlg_Yandex.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="res\ConfirmDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -256,14 +259,18 @@
     <None Include="res\MainSetupDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="res\MainSetupDlg_Yandex.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="res\MsgDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="res\MyStyles.css" />
+    <None Include="res\MyStyle.css" />
     <None Include="res\SetupProject.rc2" />
     <None Include="res\SplashDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="res\YandexStyle.css" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\SetupProject.ico" />
@@ -276,6 +283,7 @@
     <Xml Include="res\Text.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="res\Text_Yandex.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

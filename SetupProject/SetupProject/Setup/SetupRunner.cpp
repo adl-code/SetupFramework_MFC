@@ -7,6 +7,12 @@
 #define SETUP_CFG_CURRENT_INSTALLER	"current_installer"
 #define SETUP_CFG_INSTALLER_PATH "installer_path"
 
+#if defined __DEBUG || defined DEBUG
+#define WRITE_INSTALLER_BLOCK_SIZE	1000
+#else
+#define WRITE_INSTALLER_BLOCK_SIZE	0		// Maximize buffer capacity
+#endif	
+
 void SetupRunner::SetupThread(SETUP_THREAD_DATA *pData)
 {
 	std::vector<SETUP_STAGE> setupStages;
@@ -137,10 +143,8 @@ int SetupRunner::SetupStageDownloadInstaller(DWORD currentStage, DWORD totalStag
 		pData->setupData->LogA(LogError, "Failed to generate path name for installer.");
 		return SETUP_ERROR;
 	}
-
 	
-
-	CHttpDownloader *downloader = new CHttpDownloader();
+	CHttpDownloader *downloader = new CHttpDownloader(NULL, WRITE_INSTALLER_BLOCK_SIZE);
 	if (downloader == NULL)
 	{
 		DeleteFile(installerPath.c_str());
@@ -226,12 +230,8 @@ int SetupRunner::SetupStageExtractInstaller(DWORD currentStage, DWORD totalStage
 	DWORD offset = 0;
 	DWORD sizeToWrite;
 	DWORD written;
-	DWORD blockSize = 0;
-#if defined __DEBUG || defined DEBUG
-	blockSize = 1000; // Small buffer for debugging purpose
-#else
-	
-#endif	
+	DWORD blockSize = WRITE_INSTALLER_BLOCK_SIZE;
+
 	while (remain)
 	{		
 		if (pData->setupData->ShouldPause(5))

@@ -29,9 +29,6 @@ void CConfigDlg::DoDataExchange(CDataExchange* pDX)
 BOOL CConfigDlg::OnInitDialog()
 {
 	CBaseSetupDlg::OnInitDialog();
-
-	CSetupData *pSetupData = GetSetupData();
-	ASSERT(pSetupData);
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

@@ -48,12 +48,12 @@ namespace Utils
 	class CHttpDownloader
 	{
 	public:
-		CHttpDownloader(LPCTSTR pAgent = NULL);
+		CHttpDownloader(LPCTSTR pAgent = NULL, DWORD bufferSize = 0);
 		~CHttpDownloader();
 	private:
 		_tstring m_Agent;
+		DWORD m_BufferSize;
 		std::vector<_tstring> m_AcceptTypes;
-
 	public:
 		HTTP_RESULT Download(
 			__in LPCTSTR pszUrl,

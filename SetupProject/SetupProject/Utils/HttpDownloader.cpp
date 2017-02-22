@@ -1,21 +1,20 @@
 #include "stdafx.h"
 #include "HttpDownloader.h"
 
-#if defined DEBUG || defined _DEBUG
-#define DOWNLOAD_BUFFER_SIZE		1000 // Use small buffer for debugging purpose
-#else
 #define DOWNLOAD_BUFFER_SIZE		(2 * 1024 * 1024)		// 2 MB
-#endif
 
 #define WAIT_PAUSE_TIME 10
 #define WAIT_STOP_TIME 10
 
-Utils::CHttpDownloader::CHttpDownloader(LPCTSTR pAgent /*= NULL*/)
+Utils::CHttpDownloader::CHttpDownloader(LPCTSTR pAgent /*= NULL*/, DWORD bufferSize /*= 0*/)
 {
 	if (pAgent)
 		m_Agent = pAgent;
 	else
 		m_Agent = _T("MyOwnInternetAgent");
+
+	m_BufferSize = bufferSize;
+	if (m_BufferSize == 0) m_BufferSize = DOWNLOAD_BUFFER_SIZE;
 }
 
 
@@ -213,8 +212,10 @@ Utils::HTTP_RESULT Utils::CHttpDownloader::ReceiveHttpResponse(
 		}
 		else
 		{
+			/*
 			DWORD err = GetLastError();
 			TRACE("InternetReadFile error 0x%08X (%d)\n", err, err);
+			*/
 			httpResult = HTTP_ERROR;
 			break;
 		}
