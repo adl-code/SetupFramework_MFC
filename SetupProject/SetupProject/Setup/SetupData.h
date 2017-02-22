@@ -106,12 +106,12 @@ namespace MySetup
 		// Return true if the configuration has been set, false otherwise
 		bool GetUserConfig(
 			__in const char *configName,
-			__out std::string &configValue);
+			__out std::string &configValue) const;
 		
 		// Get/set properties
 	
 		void SetCouldBeBack(bool couldBeBack);
-		bool CouldBeBack();
+		bool CouldBeBack() const;
 
 		// Add a setup screen
 		void AddSetupScreen(int screenID);
@@ -127,7 +127,7 @@ namespace MySetup
 		bool GetScreenConfig(
 			__in const char *screenID,
 			__in const char *configName,
-			__out std::string &configValue);
+			__out std::string &configValue) const;
 
 
 		// Get/set setup config
@@ -143,11 +143,11 @@ namespace MySetup
 		bool GetSetupConfig(
 			__in const char *section,
 			__in const char *configName,
-			__out std::string &configValue);
+			__out std::string &configValue) const;
 
 		bool GetSetupConfig(
 			__in const char *section,
-			__out CPropertyMap& config);
+			__out CPropertyMap& config) const;
 		
 
 		void InitStringLoader(
@@ -155,33 +155,33 @@ namespace MySetup
 			__in LPCTSTR resType,
 			__in LPCTSTR resName);
 
-		std::vector<int> GetSetupScreens();
+		std::vector<int> GetSetupScreens() const;
 
 		// String resource methods
-		Utils::CStringLoader *GetStringLoader();
-		std::string GetLanguageID();
+		const Utils::CStringLoader *GetStringLoader();
+		std::string GetLanguageID() const;
 
 		void SetManuallyVerifyServer(bool manually);
-		bool ShouldManuallyVerifyServer();
+		bool ShouldManuallyVerifyServer() const;
 
 		void AddOnlineInstallerTrustedCERT(const RESOURCE_ENTRY &res);
 
-		std::vector<RESOURCE_ENTRY> GetOnlineInstallerTrustedCERTs();
+		std::vector<RESOURCE_ENTRY> GetOnlineInstallerTrustedCERTs() const;
 				
 		void Stop();
-		bool ShouldStop(DWORD timeout /* milliseconds */);
+		bool ShouldStop(DWORD timeout /* milliseconds */) const;
 
 		void LogA(UINT logLevel, const char *fmt, ...);
 
 		void SetLogLevel(UINT logLevel);
-		UINT GetLogLevel();
+		UINT GetLogLevel() const;
 
 		void PauseSetup();
 		void ResumeSetup();
-		bool ShouldPause(DWORD timeout /* milliseconds */);
+		bool ShouldPause(DWORD timeout /* milliseconds */) const;
 
 		// Shortcut to its own internal string loader
-		_tstring GetString(__in const char *textID, __in const char *langID = NULL);
-		_tstring GetString(__in std::string &textID, __in const char *langID = NULL);
+		_tstring GetString(__in const char *textID, __in const char *langID = NULL) const;
+		_tstring GetString(__in std::string &textID, __in const char *langID = NULL) const;
 	};
 }

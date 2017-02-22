@@ -212,6 +212,13 @@ void CMainSetupDlg::OnSetupCompleted()
 		button->setAttribute(_T("disabled"), val);
 		button->Release();
 	}
+	else
+	{
+		// No next button
+		OnOK();
+		return;
+	}
+
 
 	val.vt = VT_BOOL;
 	val.boolVal = VARIANT_TRUE;

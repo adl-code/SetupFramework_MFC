@@ -6,6 +6,10 @@ body {
     border: none;
     margin: 0; 
     overflow: hidden;    
+    -ms-user-select: none;  
+    -webkit-user-select: none;
+    -moz-user-select: -moz-none;
+    user-select: none;
 }
 
 button {

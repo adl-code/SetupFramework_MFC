@@ -39,6 +39,10 @@ namespace SetupRunner
 	// Invoke the installer
 	int SetupStageInvokeInstaller(DWORD currentStage, DWORD totalStages, SETUP_THREAD_DATA *pData);
 
+	LPTSTR GetCommandLineArg(
+		__in const std::vector<_tstring> &argList,
+		__out size_t &cmdLen);
+
 	class CDownloadObserver :
 		public CHttpDownloadObserver
 	{

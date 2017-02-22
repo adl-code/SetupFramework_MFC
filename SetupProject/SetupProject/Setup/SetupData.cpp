@@ -45,13 +45,13 @@ void MySetup::CSetupData::SetUserConfig(
 
 bool MySetup::CSetupData::GetUserConfig(
 	__in const char *configName,
-	__out std::string &configValue)
+	__out std::string &configValue) const
 {
 	if (configName == NULL) return false;
 
 	std::string cfg = Utils::MakeLowerA(configName);
 
-	CPropertyMap::iterator itor = m_UserConfig.find(cfg);
+	CPropertyMap::const_iterator itor = m_UserConfig.find(cfg);
 	return itor == m_UserConfig.end() ? false : (configValue = itor->second, true);
 }
 
@@ -61,7 +61,7 @@ void MySetup::CSetupData::SetCouldBeBack(bool couldBeBack)
 	m_CoudBeBack = couldBeBack;
 }
 
-bool MySetup::CSetupData::CouldBeBack()
+bool MySetup::CSetupData::CouldBeBack() const
 {
 	return m_CoudBeBack;
 }
@@ -112,7 +112,7 @@ void MySetup::CSetupData::SetScreenConfig(
 bool MySetup::CSetupData::GetScreenConfig(
 	__in const char *screenID,
 	__in const char *configName,
-	__out std::string &configValue)
+	__out std::string &configValue) const
 {
 	if (screenID == NULL || configName == NULL) return false;
 
@@ -120,11 +120,11 @@ bool MySetup::CSetupData::GetScreenConfig(
 
 	std::string cfg = Utils::MakeLowerA(configName);
 
-	std::map<std::string, CPropertyMap>::iterator itor = m_ScreenConfig.find(screen);
+	std::map<std::string, CPropertyMap>::const_iterator itor = m_ScreenConfig.find(screen);
 	if (itor == m_ScreenConfig.end())
 		return false;
 
-	CPropertyMap::iterator mapItor = itor->second.find(cfg);
+	CPropertyMap::const_iterator mapItor = itor->second.find(cfg);
 	if (mapItor == itor->second.end())
 		return false;
 
@@ -179,7 +179,7 @@ void MySetup::CSetupData::SetSetupConfig(
 bool MySetup::CSetupData::GetSetupConfig(
 	__in const char *section,
 	__in const char *configName,
-	__out std::string &configValue)
+	__out std::string &configValue) const
 {
 	if (section == NULL || configName == NULL) return false;
 
@@ -187,11 +187,11 @@ bool MySetup::CSetupData::GetSetupConfig(
 
 	std::string cfg = Utils::MakeLowerA(configName);
 
-	std::map<std::string, CPropertyMap>::iterator itor = m_SetupConfig.find(screen);
+	std::map<std::string, CPropertyMap>::const_iterator itor = m_SetupConfig.find(screen);
 	if (itor == m_SetupConfig.end())
 		return false;
 
-	CPropertyMap::iterator mapItor = itor->second.find(cfg);
+	CPropertyMap::const_iterator mapItor = itor->second.find(cfg);
 	if (mapItor == itor->second.end())
 		return false;
 
@@ -201,12 +201,12 @@ bool MySetup::CSetupData::GetSetupConfig(
 
 bool MySetup::CSetupData::GetSetupConfig(
 	__in const char *section,
-	__out CPropertyMap& config)
+	__out CPropertyMap& config) const
 {
 	if (section == NULL) return false;
 
 	std::string sectionName = Utils::MakeLowerA(section);
-	std::map<std::string, CPropertyMap>::iterator itor = m_SetupConfig.find(sectionName);
+	std::map<std::string, CPropertyMap>::const_iterator itor = m_SetupConfig.find(sectionName);
 	if (itor == m_SetupConfig.end())
 		return false;
 
@@ -226,17 +226,17 @@ void MySetup::CSetupData::InitStringLoader(
 	m_StringLoader = new Utils::CStringLoader(resModule, resType, resName);
 }
 
-std::vector<int> MySetup::CSetupData::GetSetupScreens()
+std::vector<int> MySetup::CSetupData::GetSetupScreens() const
 {
 	return m_SetupScreens;
 }
 
-Utils::CStringLoader * MySetup::CSetupData::GetStringLoader()
+const Utils::CStringLoader * MySetup::CSetupData::GetStringLoader()
 {
 	return m_StringLoader;
 }
 
-std::string MySetup::CSetupData::GetLanguageID()
+std::string MySetup::CSetupData::GetLanguageID() const
 {
 	return m_LanguageID;
 }
@@ -246,7 +246,7 @@ void MySetup::CSetupData::SetManuallyVerifyServer(bool manually)
 	m_ShouldManuallyVerifyServer = manually;
 }
 
-bool MySetup::CSetupData::ShouldManuallyVerifyServer()
+bool MySetup::CSetupData::ShouldManuallyVerifyServer() const
 {
 	return m_ShouldManuallyVerifyServer;
 }
@@ -256,7 +256,7 @@ void MySetup::CSetupData::AddOnlineInstallerTrustedCERT(const RESOURCE_ENTRY &re
 	m_OnlineInstallerTrustedCERTs.push_back(res);
 }
 
-std::vector<RESOURCE_ENTRY> MySetup::CSetupData::GetOnlineInstallerTrustedCERTs()
+std::vector<RESOURCE_ENTRY> MySetup::CSetupData::GetOnlineInstallerTrustedCERTs() const
 {
 	return m_OnlineInstallerTrustedCERTs;
 }
@@ -266,7 +266,7 @@ void MySetup::CSetupData::Stop()
 	if (m_hStopEvent) SetEvent(m_hStopEvent);
 }
 
-bool MySetup::CSetupData::ShouldStop(DWORD timeout /* milliseconds */)
+bool MySetup::CSetupData::ShouldStop(DWORD timeout /* milliseconds */) const
 {
 	if (m_hStopEvent == NULL) return true;
 
@@ -327,7 +327,7 @@ void MySetup::CSetupData::SetLogLevel(UINT logLevel)
 	m_LogLevel = logLevel;
 }
 
-UINT MySetup::CSetupData::GetLogLevel()
+UINT MySetup::CSetupData::GetLogLevel() const
 {
 	return m_LogLevel;
 }
@@ -342,7 +342,7 @@ void MySetup::CSetupData::ResumeSetup()
 	if (m_hPauseEvent) ResetEvent(m_hPauseEvent);
 }
 
-bool MySetup::CSetupData::ShouldPause(DWORD timeout /* milliseconds */)
+bool MySetup::CSetupData::ShouldPause(DWORD timeout /* milliseconds */) const
 {
 	if (m_hPauseEvent == NULL) return true;
 
@@ -350,7 +350,7 @@ bool MySetup::CSetupData::ShouldPause(DWORD timeout /* milliseconds */)
 }
 
 // Shortcut to its own internal string loader
-_tstring MySetup::CSetupData::GetString(__in const char *textID, __in const char *langID /*= NULL*/)
+_tstring MySetup::CSetupData::GetString(__in const char *textID, __in const char *langID /*= NULL*/) const
 {
 	if (textID == NULL || m_StringLoader == NULL) return _T("");
 
@@ -358,7 +358,7 @@ _tstring MySetup::CSetupData::GetString(__in const char *textID, __in const char
 	return m_StringLoader->GetString(textID, pLangID);
 }
 
-_tstring MySetup::CSetupData::GetString(__in std::string &textID, __in const char *langID /*= NULL*/)
+_tstring MySetup::CSetupData::GetString(__in std::string &textID, __in const char *langID /*= NULL*/) const
 {
 	return GetString(textID.c_str(), langID);
 }

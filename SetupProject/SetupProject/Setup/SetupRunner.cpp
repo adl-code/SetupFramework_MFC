@@ -50,7 +50,11 @@ void SetupRunner::SetupThread(SETUP_THREAD_DATA *pData)
 		DeleteFile(UTF8_TO_TSTRING(installerPath).c_str());
 	}
 	
-
+	if (result == SETUP_OK)
+	{
+		pData->setupObserver->UpdateProgress(100);
+		Sleep(500);
+	}
 	pData->setupObserver->OnFinish(result);
 
 }
@@ -292,7 +296,23 @@ int SetupRunner::SetupStageInvokeInstaller(DWORD currentStage, DWORD totalStages
 	si.cb = sizeof(si);
 
 	int result = SETUP_ERROR;
-	if (CreateProcess(installerPath.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) // Too much NULL would kill you :D
+	std::vector<_tstring> args;
+	LPTSTR pCmdLine;
+	size_t cmdLineLen;
+
+	// Parsing command line argument	
+	bool boolValue;
+	if (pData->setupData->GetUserConfig("config_make_default_browser", configValue) &&
+		Utils::ParseBoolConfig(configValue.c_str(), boolValue) && boolValue)	
+		args.push_back(_T("--make-default-browser"));
+	
+	if (pData->setupData->GetUserConfig("config_create_desktop_shortcut", configValue) &&
+		Utils::ParseBoolConfig(configValue.c_str(), boolValue) && boolValue)
+		args.push_back(_T("--make-default-browser"));
+
+	pCmdLine = GetCommandLineArg(args, cmdLineLen);
+
+	if (CreateProcess(installerPath.c_str(), pCmdLine, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) // Too many NULLs would kill you :D
 	{
 		// We would hang here until the child process finishes its jobs
 		WaitForSingleObject(pi.hProcess, INFINITE);
@@ -300,9 +320,32 @@ int SetupRunner::SetupStageInvokeInstaller(DWORD currentStage, DWORD totalStages
 		GetExitCodeProcess(pi.hProcess, &exitCode);
 		result = exitCode == 0 ? SETUP_OK : SETUP_ERROR;
 	}
-	
+	if (pCmdLine) delete pCmdLine;
 	DeleteFile(installerPath.c_str());
 	return result;
+}
+
+LPTSTR SetupRunner::GetCommandLineArg(
+	__in const std::vector<_tstring> &argList,
+	__out size_t &cmdLen)
+{
+	if (argList.empty()) return NULL;
+
+	_tstring cmdLine;
+	for (_tstring arg : argList)
+	{
+		cmdLine += arg + _T("");
+	}
+
+	size_t len = cmdLine.length();
+	
+	LPTSTR pszCmdLine = new TCHAR[len + 4096];
+	if (pszCmdLine == NULL) return NULL;
+
+	cmdLen = len + 4096;
+	_tcsncpy_s(pszCmdLine, cmdLen, cmdLine.c_str(), len - 1);
+
+	return pszCmdLine;
 }
 
 
