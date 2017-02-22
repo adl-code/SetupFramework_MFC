@@ -20,7 +20,7 @@ namespace MySetup
 		// Provide methods for children to access internal data
 		CSetupData *GetSetupData();
 	public:
-		int DoSetup(
+		int Display(
 			__in CSetupData *pSetupData,
 			__in LPCSTR screenId);
 
@@ -39,9 +39,12 @@ namespace MySetup
 	
 		virtual BOOL PreTranslateMessage(MSG* pMsg);
 		virtual void PreInitDialog();
-		virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);		
-		virtual void OnClose();				
+		virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
+		virtual void OnClose();		
 		virtual BOOL OnInitDialog();
+		
 		virtual HRESULT WINAPI ShowContextMenu(DWORD dwID, POINT *ppt, IUnknown *pcmdtReserved, IDispatch *pdispReserved);
+
+		static bool IsElementDisabled(IHTMLElement *pElement);
 	};
 }

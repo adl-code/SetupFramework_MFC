@@ -22,6 +22,14 @@
 
 #define MAX_LANG_ID			16
 
+enum LogLevel
+{	
+	LogDebug = 0,
+	LogInfo,
+	LogWarning,
+	LogError,
+};
+
 namespace MySetup
 {
 	typedef std::map<std::string, std::string> CPropertyMap;
@@ -70,8 +78,6 @@ namespace MySetup
 
 		std::map<std::string, CPropertyMap> m_ScreenConfig;
 		
-		bool m_ShouldHideBorder; // Hide setup screen's border
-		bool m_ShouldBeTopMost; // Set all setup screens to topmost
 		bool m_CoudBeBack; // Check whether we could be back to the previous setup step
 		
 
@@ -87,7 +93,9 @@ namespace MySetup
 		std::vector<RESOURCE_ENTRY> m_OnlineInstallerTrustedCERTs;
 
 		HANDLE m_hStopEvent;
+		HANDLE m_hPauseEvent;
 
+		UINT m_LogLevel;
 	public:
 		// Set user configuration
 		void SetUserConfig(
@@ -101,12 +109,7 @@ namespace MySetup
 			__out std::string &configValue);
 		
 		// Get/set properties
-		void SetHideBorder(bool hideBorder);
-		bool ShouldHideBorder();
-
-		void SetTopMost(bool topmost);
-		bool ShouldBeTopMost();
-
+	
 		void SetCouldBeBack(bool couldBeBack);
 		bool CouldBeBack();
 
@@ -165,7 +168,19 @@ namespace MySetup
 
 		std::vector<RESOURCE_ENTRY> GetOnlineInstallerTrustedCERTs();
 				
-		void StopInstall();
+		void Stop();
 		bool ShouldStop(DWORD timeout /* milliseconds */);
+
+		void LogA(UINT logLevel, const char *fmt, ...);
+
+		void SetLogLevel(UINT logLevel);
+		UINT GetLogLevel();
+
+		void PauseSetup();
+		void ResumeSetup();
+		bool ShouldPause(DWORD timeout /* milliseconds */);
+
+		// Shortcut to its own internal string loader
+		_tstring GetString(__in const char *textID, __in const char *langID = NULL);
 	};
 }

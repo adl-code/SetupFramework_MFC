@@ -5,18 +5,24 @@
 
 using namespace MySetup;
 
+#define LOG_LINE_LEN		1024
+
 MySetup::CSetupData::CSetupData()
 : m_CoudBeBack(false)
 , m_ShouldShowFinalScreen(false)
-, m_ShouldHideBorder(false)
-, m_ShouldBeTopMost(false)
 , m_StringLoader(NULL)
 , m_ShouldManuallyVerifyServer(false)
+#if defined DEBUG || defined _DEBUG
+, m_LogLevel(LogDebug)
+#else
+, m_LogLevel(LogError)
+#endif
 {
 	// Add the main setup screen first
 	m_SetupScreens.push_back(SETUP_SCREEN_MAIN);
 
 	m_hStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hPauseEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 }
 
 MySetup::CSetupData::~CSetupData()
@@ -24,6 +30,7 @@ MySetup::CSetupData::~CSetupData()
 	if (m_StringLoader) delete m_StringLoader;
 	
 	if (m_hStopEvent) CloseHandle(m_hStopEvent);
+	if (m_hPauseEvent) CloseHandle(m_hPauseEvent);
 }
 
 void MySetup::CSetupData::SetUserConfig(
@@ -48,25 +55,6 @@ bool MySetup::CSetupData::GetUserConfig(
 	return itor == m_UserConfig.end() ? false : (configValue = itor->second, true);
 }
 
-void MySetup::CSetupData::SetHideBorder(bool hideBorder)
-{
-	m_ShouldHideBorder = hideBorder;
-}
-
-bool MySetup::CSetupData::ShouldHideBorder()
-{
-	return m_ShouldHideBorder;
-}
-
-void MySetup::CSetupData::SetTopMost(bool topmost)
-{
-	m_ShouldBeTopMost = topmost;
-}
-
-bool MySetup::CSetupData::ShouldBeTopMost()
-{
-	return m_ShouldBeTopMost;
-}
 
 void MySetup::CSetupData::SetCouldBeBack(bool couldBeBack)
 {
@@ -273,7 +261,7 @@ std::vector<RESOURCE_ENTRY> MySetup::CSetupData::GetOnlineInstallerTrustedCERTs(
 	return m_OnlineInstallerTrustedCERTs;
 }
 
-void MySetup::CSetupData::StopInstall()
+void MySetup::CSetupData::Stop()
 {
 	if (m_hStopEvent) SetEvent(m_hStopEvent);
 }
@@ -283,5 +271,90 @@ bool MySetup::CSetupData::ShouldStop(DWORD timeout /* milliseconds */)
 	if (m_hStopEvent == NULL) return true;
 
 	return WaitForSingleObject(m_hStopEvent, timeout) != WAIT_TIMEOUT;
+}
+
+void MySetup::CSetupData::LogA(UINT logLevel, const char *fmt, ...)
+{
+	if (fmt == NULL || logLevel < m_LogLevel) return;
+
+	std::string logType;
+
+	switch (logLevel)
+	{
+	case LogDebug:
+		logType = "DEBUG";
+		break;
+	case LogInfo:
+		logType = "INFO";
+		break;
+	case LogError:
+		logType = "ERROR";
+		break;
+	case LogWarning:
+		logType = "WARNING";
+		break;
+	default:
+		return;
+	}
+	
+	char buffer[LOG_LINE_LEN];	
+	std::string logData = "[" + logType + "] ";
+
+	SYSTEMTIME st;
+	GetLocalTime(&st);
+	sprintf_s(buffer, LOG_LINE_LEN, "%d/%02d/%02d - %02d:%02d:%02d.%03d: ",
+		st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+	logData = buffer + logData;
+
+	va_list val;
+	va_start(val, fmt);
+	if (vsprintf_s(buffer, LOG_LINE_LEN, fmt, val) <= 0)
+	{
+		va_end(val);
+		return;
+	}
+	va_end(val);
+
+	logData += buffer;
+	if (logData.empty() || logData.at(logData.size() - 1) != '\n')
+		logData += "\n";
+
+	OutputDebugStringA(logData.c_str());
+}
+
+void MySetup::CSetupData::SetLogLevel(UINT logLevel)
+{
+	m_LogLevel = logLevel;
+}
+
+UINT MySetup::CSetupData::GetLogLevel()
+{
+	return m_LogLevel;
+}
+
+void MySetup::CSetupData::PauseSetup()
+{
+	if (m_hPauseEvent) SetEvent(m_hPauseEvent);
+}
+
+void MySetup::CSetupData::ResumeSetup()
+{
+	if (m_hPauseEvent) ResetEvent(m_hPauseEvent);
+}
+
+bool MySetup::CSetupData::ShouldPause(DWORD timeout /* milliseconds */)
+{
+	if (m_hPauseEvent == NULL) return true;
+
+	return WaitForSingleObject(m_hPauseEvent, timeout) != WAIT_TIMEOUT;
+}
+
+// Shortcut to its own internal string loader
+_tstring MySetup::CSetupData::GetString(__in const char *textID, __in const char *langID /*= NULL*/)
+{
+	if (textID == NULL || m_StringLoader == NULL) return _T("");
+
+	LPCSTR pLangID = langID ? langID : m_LanguageID.c_str();
+	return m_StringLoader->GetString(textID, langID);
 }
 

@@ -34,6 +34,9 @@
     <Filter Include="Resource Files\Html">
       <UniqueIdentifier>{ad5e21a1-7dbb-474b-beea-46edfc5b6654}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\SETUP">
+      <UniqueIdentifier>{11af60ab-9f7b-4aa0-bfa5-697abe1ab0b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SetupProject.h">
@@ -81,13 +84,22 @@
     <ClInclude Include="UI\ConfigDlg.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\MainSetupDlg.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\HttpDownloader.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Setup\ConfigParser.h">
+      <Filter>Header Files\Setup</Filter>
+    </ClInclude>
+    <ClInclude Include="Setup\SetupRunner.h">
+      <Filter>Header Files\Setup</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\MsgDlg.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\MainSetupDlg.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Setup\ConfigData.h">
       <Filter>Header Files\Setup</Filter>
     </ClInclude>
   </ItemGroup>
@@ -140,6 +152,12 @@
     <ClCompile Include="Setup\ConfigParser.cpp">
       <Filter>Source Files\Setup</Filter>
     </ClCompile>
+    <ClCompile Include="Setup\SetupRunner.cpp">
+      <Filter>Source Files\Setup</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\MsgDlg.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SetupProject.rc">
@@ -168,18 +186,25 @@
     <None Include="res\MainSetupDlg.htm">
       <Filter>Resource Files\Html</Filter>
     </None>
+    <None Include="MsgDlg.htm" />
+    <None Include="res\ConfirmDlg.htm">
+      <Filter>Resource Files\Html</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\SetupProject.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\splash.png">
+      <Filter>Resource Files\SETUP</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="res\Text.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
     <Xml Include="res\Config.xml">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\SETUP</Filter>
+    </Xml>
+    <Xml Include="res\Text.xml">
+      <Filter>Resource Files\SETUP</Filter>
     </Xml>
   </ItemGroup>
 </Project>

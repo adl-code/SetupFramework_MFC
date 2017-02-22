@@ -3,17 +3,17 @@
     <link rel="stylesheet" type="text/css" href="res:/MY_STYLES" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 </head>
-<body id="ConfigDlg">
+<body id="ConfigDlg">    
     <table align="center">
         <tr>
             <td>
-                <input type="checkbox" id="checkbox_make_default_browser" value="config_make_default_browser"/>
-                <label for="checkbox_make_default_browser" text_id="make_default_browser">Make me your default browser</label>                
-            </td>           
+                <input type="checkbox" id="checkbox_make_default_browser" value="config_make_default_browser" />
+                <label for="checkbox_make_default_browser" text_id="make_default_browser">Make me your default browser</label>
+            </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" id="checkbox_desktop_shortcut" value="config_create_desktop_shortcut"/>
+                <input type="checkbox" id="checkbox_desktop_shortcut" value="config_create_desktop_shortcut" />
                 <label for="checkbox_desktop_shortcut" text_id="create_desktop_shortcut">Create a shortcut on your desktop</label>
             </td>
 
@@ -27,12 +27,10 @@
         </tr>
         -->
     </table>
-    <table width=100% style="position: absolute; bottom: 5px">
-        <tr>
-            <td><button id="button_next" text_id="next" style="float:right;">Next</button></td>
-            <td><button id="button_cancel" text_id="cancel" style="float:left;">Cancel</button></td>
-        </tr>
-    </table>
-
+    <div align=center style="width:100%;position: absolute; bottom: 10px;">
+        <button id="button_next" text_id="next" style="margin-right:10px;">Next</button>
+        <button id="button_cancel" text_id="cancel">Cancel</button>
+    </div>
+    
 </body>
 </html>

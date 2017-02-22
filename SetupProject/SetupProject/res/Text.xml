@@ -1,5 +1,9 @@
 ﻿<xml encoding="utf-8" version="1.0">
 <text_table>
+  <text id="app_title">
+    <entry>MySetup</entry>
+  </text>
+  
 	<text id="ok">
 		<entry>OK</entry>		
 	</text>
@@ -66,6 +70,26 @@
   <text id="extracting_installer">
     <entry>Đang khởi tạo quá trình cài đặt ...</entry>
     <entry lang="en_us">Preparing installation data ...</entry>
+  </text>
+
+  <text id="installer_is_running">
+    <entry>Đang cài đặt ...</entry>
+    <entry lang="en_us">Installing files ...</entry>
+  </text>
+
+  <text id="yes">
+    <entry>Có</entry>
+    <entry lang="en_us">Yes</entry>
+  </text>
+
+  <text id="no">
+    <entry>Không</entry>
+    <entry lang="en_us">No</entry>
+  </text>
+
+  <text id="confirm_exit">
+    <entry>Bạn có muốn chấm dứt quá trình cài đặt không?</entry>
+    <entry lang="en_us">Do you really want to exit?</entry>
   </text>
 </text_table>
 </xml>

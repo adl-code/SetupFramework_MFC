@@ -36,8 +36,7 @@ BOOL CEulaDlg::OnInitDialog()
 	ASSERT(pSetupData);
 
 	// Update window text
-	if (pSetupData->GetStringLoader())
-		SetWindowText(pSetupData->GetStringLoader()->LoadString("eula", pSetupData->GetLanguageID().c_str()).c_str());
+	SetWindowText(pSetupData->GetString("eula").c_str());
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -58,8 +57,7 @@ END_DHTML_EVENT_MAP()
 
 HRESULT CEulaDlg::OnButtonNext(IHTMLElement* pElement)
 {
-	VARIANT disabled;
-	if (pElement && SUCCEEDED(pElement->getAttribute(_T("disabled"), 0, &disabled)) && disabled.vt == VT_BOOL && disabled.boolVal == VARIANT_FALSE)
+	if (!CBaseSetupDlg::IsElementDisabled(pElement))
 		EndDialog(SETUP_OK);
 	return S_OK;
 }

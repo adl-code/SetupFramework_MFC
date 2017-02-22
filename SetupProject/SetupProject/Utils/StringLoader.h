@@ -30,7 +30,7 @@ namespace Utils
 		~CStringLoader();
 	public:
 		// Load the specified string (return an empty string in case of errors)
-		_tstring LoadString(			
+		_tstring GetString(			
 			__in const char *stringID, /* The ID of the string to be loaded */
 			__in_opt const char *langID	= NULL /* The language ID, specify NULL for the default (unnamed) language */
 			);
@@ -38,7 +38,7 @@ namespace Utils
 		// Load the specified string
 		// Return true if successful, false otherwise
 		// The result will be stored in stringContent
-		bool LoadString(
+		bool GetString(
 			__in const char *stringID, /* The ID of the string to be loaded */
 			__out _tstring &stringContent, /* The variable containing the string content on return */
 			__in_opt const char *langID = NULL /* The language ID, specify NULL for the default (unnamed) language */

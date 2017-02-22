@@ -31,15 +31,15 @@ BOOL CConfigDlg::OnInitDialog()
 	CBaseSetupDlg::OnInitDialog();
 
 	CSetupData *pSetupData = GetSetupData();
-	ASSERT(pSetupData && pSetupData->GetStringLoader());
+	ASSERT(pSetupData);
 
-	SetWindowText(pSetupData->GetStringLoader()->LoadString("configuration", pSetupData->GetLanguageID().c_str()).c_str());
+	SetWindowText(pSetupData->GetString("configuration").c_str());
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 BEGIN_MESSAGE_MAP(CConfigDlg, CDHtmlDialog)
-	ON_WM_CLOSE()
+	ON_WM_CLOSE()	
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(CConfigDlg)

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "Utils/StringUtils.h"
-#include "ConfigParser.h"
+#include "Setup/ConfigParser.h"
+#include "Setup/ConfigData.h"
 
 using namespace MySetup;
 
@@ -186,8 +187,8 @@ void ConfigParser::ParseXmlSetupOnlineInstaller(
 	if (amd64Installer.find("url") == amd64Installer.end())
 		amd64Installer = genericInstaller;
 
-	setupData->GetSetupConfig(SETUP_CFG_ONLINE_INSTALLER_AMD64, amd64Installer);
-	setupData->GetSetupConfig(SETUP_CFG_ONLINE_INSTALLER_X86, x86Installer);
+	setupData->SetSetupConfig(SETUP_CFG_ONLINE_INSTALLER_AMD64, amd64Installer);
+	setupData->SetSetupConfig(SETUP_CFG_ONLINE_INSTALLER_X86, x86Installer);
 
 	_tstring configValue;
 	bool manualVerification = false;

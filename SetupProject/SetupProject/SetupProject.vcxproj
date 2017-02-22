@@ -191,14 +191,17 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SetupProject.h" />
     <ClInclude Include="Setup\BaseSetupDlg.h" />
+    <ClInclude Include="Setup\ConfigData.h" />
     <ClInclude Include="Setup\MainSetup.h" />
     <ClInclude Include="Setup\ConfigParser.h" />
     <ClInclude Include="Setup\SetupData.h" />
+    <ClInclude Include="Setup\SetupRunner.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UI\ConfigDlg.h" />
     <ClInclude Include="UI\EulaDlg.h" />
     <ClInclude Include="UI\MainSetupDlg.h" />
+    <ClInclude Include="UI\MsgDlg.h" />
     <ClInclude Include="UI\SplashDlg.h" />
     <ClInclude Include="Utils\HttpDownloader.h" />
     <ClInclude Include="Utils\MsXmlUtils.h" />
@@ -213,6 +216,7 @@
     <ClCompile Include="Setup\MainSetup.cpp" />
     <ClCompile Include="Setup\ConfigParser.cpp" />
     <ClCompile Include="Setup\SetupData.cpp" />
+    <ClCompile Include="Setup\SetupRunner.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Offline|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Online|Win32'">Create</PrecompiledHeader>
@@ -222,6 +226,7 @@
     <ClCompile Include="UI\ConfigDlg.cpp" />
     <ClCompile Include="UI\EulaDlg.cpp" />
     <ClCompile Include="UI\MainSetupDlg.cpp" />
+    <ClCompile Include="UI\MsgDlg.cpp" />
     <ClCompile Include="UI\SplashDlg.cpp" />
     <ClCompile Include="Utils\HttpDownloader.cpp" />
     <ClCompile Include="Utils\MsXmlUtils.cpp" />
@@ -233,7 +238,13 @@
     <ResourceCompile Include="SetupProject.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="MsgDlg.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="res\ConfigDlg.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="res\ConfirmDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="res\EulaDlg.htm">
@@ -253,6 +264,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\SetupProject.ico" />
+    <Image Include="res\splash.png" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="res\Config.xml">

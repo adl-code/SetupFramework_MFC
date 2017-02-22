@@ -3,7 +3,7 @@
 
 
 BEGIN_MESSAGE_MAP(MySetup::CBaseSetupDlg, CDHtmlDialog)
-	
+
 END_MESSAGE_MAP()
 
 MySetup::CBaseSetupDlg::CBaseSetupDlg(UINT dlgID, CWnd *parent)
@@ -18,7 +18,7 @@ void MySetup::CBaseSetupDlg::UpdateElementText(
 	__in CSetupData *pSetupData)
 {
 	// Update text for any HTML control that has the "text_id" attribute
-	if (pDoc == NULL || pSetupData == NULL || pSetupData->GetStringLoader() == NULL) return;
+	if (pDoc == NULL || pSetupData == NULL) return;
 
 	HRESULT hr;
 
@@ -53,7 +53,7 @@ void MySetup::CBaseSetupDlg::UpdateElementText(
 					std::string stringID;
 					stringID = Utils::UnicodeToUtf8(textID.bstrVal);
 
-					hr = pElement->put_innerHTML((BSTR)TSTRING_TO_UNICODE(pSetupData->GetStringLoader()->LoadString(stringID.c_str(), pSetupData->GetLanguageID().c_str())).c_str());
+					hr = pElement->put_innerHTML((BSTR)TSTRING_TO_UNICODE(pSetupData->GetString(stringID.c_str())).c_str());
 				}
 				pElement->Release();
 			}
@@ -72,7 +72,7 @@ MySetup::CSetupData* MySetup::CBaseSetupDlg::GetSetupData()
 	return m_SetupData;
 }
 
-int MySetup::CBaseSetupDlg::DoSetup(
+int MySetup::CBaseSetupDlg::Display(
 	__in CSetupData *pSetupData,
 	__in LPCSTR screenId)
 {
@@ -81,13 +81,14 @@ int MySetup::CBaseSetupDlg::DoSetup(
 	m_ScreenId = screenId;
 	
 	m_SetupData = pSetupData;
+
 	return DoModal();
 }
 
 
 BOOL MySetup::CBaseSetupDlg::PreTranslateMessage(MSG* pMsg)
 {
-	// TODO: Add your specialized code here and/or call the base class
+	// TODO: Add your specialized code here and/or call the base class	
 	if ((pMsg->message == WM_KEYDOWN || pMsg->message == WM_KEYUP ||pMsg->message == WM_SYSKEYDOWN || pMsg->message == WM_SYSKEYUP) &&
 		(pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE ||
 		pMsg->wParam == VK_F5 || pMsg->wParam == VK_F11 || pMsg->wParam == VK_F12 ||
@@ -100,16 +101,50 @@ BOOL MySetup::CBaseSetupDlg::PreTranslateMessage(MSG* pMsg)
 void MySetup::CBaseSetupDlg::PreInitDialog()
 {
 	// TODO: Add your specialized code here and/or call the base class
+	std::string configValue;
+	LONG width, height;
+	LPCSTR screenId = m_ScreenId.c_str();
+	if (m_SetupData->GetScreenConfig(screenId, "width", configValue) && Utils::ParseLongConfig(configValue.c_str(), width) &&
+		m_SetupData->GetScreenConfig(screenId, "height", configValue) && Utils::ParseLongConfig(configValue.c_str(), height) &&
+		width > 0 && height > 0)
+	{
+		// Update screen width and height
+		HMONITOR currentMonitor = MonitorFromWindow(GetSafeHwnd(), MONITOR_DEFAULTTONEAREST);
+		if (currentMonitor)
+		{
+			MONITORINFO monitor = {};
+			monitor.cbSize = sizeof(monitor);
+			if (GetMonitorInfo(currentMonitor, &monitor))
+			{
+				LONG cx = monitor.rcWork.right - monitor.rcWork.left;
+				LONG cy = monitor.rcWork.bottom - monitor.rcWork.top;
+
+				LONG x = monitor.rcWork.left + (cx - width) / 2;
+				LONG y = monitor.rcWork.top + (cy - height) / 2;
+
+				SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
+			}
+		}	
+	}
 
 	GetSystemMenu(FALSE)->EnableMenuItem(SC_CLOSE, MF_BYCOMMAND | MF_DISABLED);
-	if (m_SetupData->ShouldHideBorder())
+	bool shouldHideBorder = false;
+	bool shouldBeTopMost = false;
+
+	if (m_SetupData->GetScreenConfig(screenId, "no_border", configValue))
+		Utils::ParseBoolConfig(configValue.c_str(), shouldHideBorder);
+
+	if (m_SetupData->GetScreenConfig(screenId, "top_most", configValue))
+		Utils::ParseBoolConfig(configValue.c_str(), shouldBeTopMost);
+
+	if (shouldHideBorder)
 	{
-		ModifyStyle(WS_CAPTION, 0);
+		ModifyStyle(WS_CAPTION | WS_BORDER | WS_THICKFRAME, 0, SWP_FRAMECHANGED);
 		ModifyStyleEx(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE, 0, SWP_FRAMECHANGED);
 		
 	}
 
-	if (m_SetupData->ShouldBeTopMost())
+	if (shouldBeTopMost)
 		SetWindowPos(&wndTopMost, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 	CDHtmlDialog::PreInitDialog();
@@ -133,11 +168,11 @@ void MySetup::CBaseSetupDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 		pDoc->Release();
 	}
 
-	if (m_SetupData->CouldBeBack() && m_SetupData->GetStringLoader())
+	if (m_SetupData->CouldBeBack())
 	{
 		// Modify the "Cancel" button text to "Back"
 		
-		_tstring backText = m_SetupData->GetStringLoader()->LoadString("back", m_SetupData->GetLanguageID().c_str());
+		_tstring backText = m_SetupData->GetString("back");
 		if (!backText.empty())
 		{
 			CString backButton = backText.c_str();
@@ -162,18 +197,27 @@ BOOL MySetup::CBaseSetupDlg::OnInitDialog()
 	// TODO: Add your message handler code here
 	std::string resourceID;
 	if (!m_SetupData->GetScreenConfig(m_ScreenId.c_str(), "resource", resourceID)) return SETUP_ERROR;
-		LoadFromResource(UTF8_TO_TSTRING(resourceID).c_str());
-
+	
+	LoadFromResource(UTF8_TO_TSTRING(resourceID).c_str());
+	
 	return TRUE;
 }
 
 HRESULT WINAPI MySetup::CBaseSetupDlg::ShowContextMenu(DWORD dwID, POINT *ppt, IUnknown *pcmdtReserved, IDispatch *pdispReserved)
 {
-#if defined _DEBUG || defined DEBUG
-	return __super::ShowContextMenu(dwID, ppt, pcmdtReserved, pdispReserved);
-#else
-
+	UNREFERENCED_PARAMETER(dwID);
+	UNREFERENCED_PARAMETER(ppt);
+	UNREFERENCED_PARAMETER(pcmdtReserved);
+	UNREFERENCED_PARAMETER(pdispReserved);
 	// Just do nothing to prevent displaying context-menu
 	return S_OK;
-#endif
+}
+
+bool MySetup::CBaseSetupDlg::IsElementDisabled(IHTMLElement *pElement)
+{
+	VARIANT disabled = {};
+	if (pElement  && SUCCEEDED(pElement->getAttribute(_T("disabled"), 0, &disabled))
+		&& disabled.vt == VT_BOOL && disabled.boolVal == VARIANT_TRUE)
+		return true;
+	return false;
 }

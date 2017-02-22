@@ -3,8 +3,11 @@
 
 #include "stdafx.h"
 #include "SetupProject.h"
-#include "UI/MainSetupDlg.h"
 
+#include "UI/MainSetupDlg.h"
+#include "UI/MsgDlg.h"
+
+#include "Setup/ConfigData.h"
 
 // Using user defined message to update UI
 // WPARAM: UI component to update
@@ -48,8 +51,8 @@ BEGIN_MESSAGE_MAP(CMainSetupDlg, CDHtmlDialog)
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(CMainSetupDlg)
-	DHTML_EVENT_ONCLICK(_T("ButtonOK"), OnButtonOK)
-	DHTML_EVENT_ONCLICK(_T("ButtonCancel"), OnButtonCancel)
+	DHTML_EVENT_ONCLICK(_T("button_ok"), OnButtonOK)
+	DHTML_EVENT_ONCLICK(_T("button_cancel"), OnButtonCancel)
 END_DHTML_EVENT_MAP()
 
 
@@ -62,9 +65,19 @@ HRESULT CMainSetupDlg::OnButtonOK(IHTMLElement* /*pElement*/)
 	return S_OK;
 }
 
-HRESULT CMainSetupDlg::OnButtonCancel(IHTMLElement* /*pElement*/)
+HRESULT CMainSetupDlg::OnButtonCancel(IHTMLElement* pElement)
 {
-	EndDialog(SETUP_CANCEL);
+	if (!CBaseSetupDlg::IsElementDisabled(pElement))
+	{
+		CSetupData *setupData = CBaseSetupDlg::GetSetupData();
+		ASSERT(setupData);
+
+		setupData->PauseSetup();
+		int result = CMsgDlg::ShowConfirmMessage(setupData, setupData->GetString(SID_CONFIRM_EXIT).c_str());
+			setupData->ResumeSetup();
+		if (result == IDYES)
+			setupData->Stop();
+	}
 	return S_OK;
 }
 
@@ -109,7 +122,7 @@ void CMainSetupDlg::OnError(__in LPCTSTR errorText)
 
 void CMainSetupDlg::OnFinish(int setupResult)
 {
-	
+	EndDialog(setupResult);
 }
 
 void CMainSetupDlg::SetSetupProgress(DWORD percentage)

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "Setup/SetupData.h"
 #include "Setup/MainSetup.h"
+#include "Setup/ConfigData.h"
 #include "Setup/ConfigParser.h"
+#include "Setup/SetupRunner.h"
 
 #include "Resource.h"
 #include "UI/SplashDlg.h"
@@ -12,9 +14,6 @@
 #include "Utils/ResourceLoader.h"
 #include "Utils/HttpDownloader.h"
 
-bool RunMainSetup(
-	__inout CSetupData *setupData,
-	__in CSetupObserver *setupObserver);
 
 void MySetup::InitSetup(
 	__inout CSetupData *setupData)
@@ -60,9 +59,6 @@ void MySetup::InitSetup(
 			delete configDoc;
 		}
 	}
-
-	setupData->SetHideBorder(true);
-	setupData->SetTopMost(true);
 }
 
 
@@ -118,12 +114,12 @@ int MySetup::RunSetup(
 		int result = SETUP_OK;
 		if (setupObserver)
 		{
-			if (!RunMainSetup(setupData, setupObserver))
+			if (!SetupRunner::RunMainSetup(setupData, setupObserver))
 				result = SETUP_ERROR;
 		}
 		
 		if (result == SETUP_OK)
-			result = setupDlg->DoSetup(setupData, screenId.c_str());
+			result = setupDlg->Display(setupData, screenId.c_str());
 		delete setupDlg;
 
 		switch (result)
@@ -146,60 +142,3 @@ int MySetup::RunSetup(
 	return SETUP_OK;
 }
 
-typedef struct
-{
-	CSetupData *setupData;
-	CSetupObserver *setupObserver;
-} SETUP_THREAD_DATA;
-
-
-void SetupThread(SETUP_THREAD_DATA *pData)
-{
-	Sleep(300);
-	Utils::CStringLoader *stringLoader = pData->setupData->GetStringLoader();
-	std::string langID = pData->setupData->GetLanguageID();
-	LPCSTR pLangID = langID.c_str();
-
-	pData->setupObserver->UpdateStatus(stringLoader->LoadString(SID_DOWNLOADING_INSTALLER, pLangID).c_str());
-
-	for (int i = 0; i < 10; i++)
-	{
-		pData->setupObserver->UpdateProgress((i + 1) * 10);	
-		Sleep(1000);
-	}
-}
-
-DWORD WINAPI MainSetupThread(LPVOID lParam)
-{
-	if (lParam)
-	{
-		SETUP_THREAD_DATA *pData = (SETUP_THREAD_DATA*)lParam;
-		SetupThread(pData);
-		delete pData;
-	}
-	return 0;
-}
-
-bool RunMainSetup(
-	__inout CSetupData *setupData,
-	__in CSetupObserver *setupObserver)
-{
-	if (setupData == NULL || setupObserver == NULL) return false;
-	SETUP_THREAD_DATA *pData = new SETUP_THREAD_DATA();
-	if (pData == NULL) return false;
-
-	pData->setupData = setupData;
-	pData->setupObserver = setupObserver;
-	HANDLE hThread = CreateThread(
-		NULL,
-		0,
-		&MainSetupThread,
-		pData,
-		0,
-		NULL);
-
-	if (hThread == NULL) return false;
-
-	CloseHandle(hThread);
-	return true;
-}

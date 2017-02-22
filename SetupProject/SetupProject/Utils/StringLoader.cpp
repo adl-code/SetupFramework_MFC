@@ -34,16 +34,16 @@ Utils::CStringLoader::~CStringLoader()
 
 }
 
-_tstring Utils::CStringLoader::LoadString(
+_tstring Utils::CStringLoader::GetString(
 	__in const char *stringID, /* The ID of the string to be loaded */
 	__in_opt const char *langID /*= NULL /* /* The language ID, specify NULL for the default (unnamed) language */)
 {
 	_tstring result;
 
-	return LoadString(stringID, result, langID) ? result : _T("");		
+	return GetString(stringID, result, langID) ? result : _T("");		
 }
 
-bool Utils::CStringLoader::LoadString(
+bool Utils::CStringLoader::GetString(
 	__in const char *stringID, /* The ID of the string to be loaded */
 	__out _tstring &stringContent, /* The variable containing the string content on return */ 
 	__in_opt const char *langID /*= NULL /* The language ID, specify NULL for the default (unnamed) language */)
