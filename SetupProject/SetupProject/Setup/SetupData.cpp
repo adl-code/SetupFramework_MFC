@@ -355,6 +355,11 @@ _tstring MySetup::CSetupData::GetString(__in const char *textID, __in const char
 	if (textID == NULL || m_StringLoader == NULL) return _T("");
 
 	LPCSTR pLangID = langID ? langID : m_LanguageID.c_str();
-	return m_StringLoader->GetString(textID, langID);
+	return m_StringLoader->GetString(textID, pLangID);
+}
+
+_tstring MySetup::CSetupData::GetString(__in std::string &textID, __in const char *langID /*= NULL*/)
+{
+	return GetString(textID.c_str(), langID);
 }
 

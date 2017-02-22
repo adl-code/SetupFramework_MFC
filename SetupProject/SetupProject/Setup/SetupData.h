@@ -182,5 +182,6 @@ namespace MySetup
 
 		// Shortcut to its own internal string loader
 		_tstring GetString(__in const char *textID, __in const char *langID = NULL);
+		_tstring GetString(__in std::string &textID, __in const char *langID = NULL);
 	};
 }

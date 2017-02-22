@@ -32,9 +32,7 @@ BOOL CConfigDlg::OnInitDialog()
 
 	CSetupData *pSetupData = GetSetupData();
 	ASSERT(pSetupData);
-
-	SetWindowText(pSetupData->GetString("configuration").c_str());
-
+	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

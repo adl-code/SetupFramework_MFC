@@ -53,7 +53,7 @@ void MySetup::CBaseSetupDlg::UpdateElementText(
 					std::string stringID;
 					stringID = Utils::UnicodeToUtf8(textID.bstrVal);
 
-					hr = pElement->put_innerHTML((BSTR)TSTRING_TO_UNICODE(pSetupData->GetString(stringID.c_str())).c_str());
+					hr = pElement->put_innerHTML((BSTR)TSTRING_TO_UNICODE(pSetupData->GetString(stringID)).c_str());
 				}
 				pElement->Release();
 			}
@@ -200,14 +200,19 @@ BOOL MySetup::CBaseSetupDlg::OnInitDialog()
 	// TODO: Add your message handler code here
 
 	// Update dialog resource
-	std::string resourceID;
-	if (!m_SetupData->GetScreenConfig(m_ScreenId.c_str(), "resource", resourceID)) return SETUP_ERROR;
+	std::string configValue;
+	if (!m_SetupData->GetScreenConfig(m_ScreenId.c_str(), "resource", configValue)) return SETUP_ERROR;
 	
-	LoadFromResource(UTF8_TO_TSTRING(resourceID).c_str());
+	LoadFromResource(UTF8_TO_TSTRING(configValue).c_str());
 
 	// Disable drag n drop
 	this->m_pBrowserApp->put_RegisterAsDropTarget(VARIANT_FALSE);
 	
+	// Update text
+	if (m_SetupData->GetScreenConfig(m_ScreenId.c_str(), "title", configValue))
+	{
+		SetWindowText(m_SetupData->GetString(configValue).c_str());
+	}
 	return TRUE;
 }
 

@@ -32,12 +32,6 @@ BOOL CEulaDlg::OnInitDialog()
 {
 	CBaseSetupDlg::OnInitDialog();
 
-	CSetupData *pSetupData = GetSetupData();
-	ASSERT(pSetupData);
-
-	// Update window text
-	SetWindowText(pSetupData->GetString("eula").c_str());
-
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
