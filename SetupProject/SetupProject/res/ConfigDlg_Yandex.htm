@@ -1,0 +1,45 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="res:/YANDEX_STYLE" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+</head>
+<body id="ConfigDlg">    
+    <div style="float:left; margin-top:30px; margin-left:40px">
+        <img src="res:/SETUP/YANDEX_LOGO" />
+    </div>
+
+    <div style="margin-left: 200px; margin-right: 50px; margin-top: 20px;">
+        <label text_id="welcome" style="font-weight:bold;"></label>
+        <table align="left" width=100% style="margin-top: 10px;">
+            <tr>
+                <td style="" colspan="2"><label text_id="eula_content" /></td>
+            </tr>
+
+            <tr>
+                <td valign="top">
+                    <input type="checkbox" id="checkbox_make_default_browser" value="config_make_default_browser" />
+                </td>
+                <td valign="top">
+                    <label for="checkbox_make_default_browser" style="color:#666;font-size:13px;" text_id="make_default_browser" />
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <input type="checkbox" id="checkbox_send_browser_data" value="config_send_browser_data" />
+                </td>
+                <td valign="top">
+                    <label for="checkbox_send_browser_data" style="color:#666;font-size:13px;" text_id="send_browser_data" />
+                </td>
+            </tr>
+
+        </table>
+
+
+        <div align=left style="width:100%;position: absolute; bottom: 20px;">
+            <button class="default" id="button_next" text_id="launch_program" style="margin-right:10px;">Next</button>
+            <button id="button_cancel" text_id="cancel">Cancel</button>
+        </div>
+    </div>
+
+</body>
+</html>
