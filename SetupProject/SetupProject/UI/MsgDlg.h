@@ -10,6 +10,15 @@
 using namespace MySetup;
 
 // CMsgDlg dialog
+enum MessageType
+{
+	MessageUnknown,
+	MessageNormal,
+	MessageError,
+	MessageInfo,
+	MessageWarning,
+	MessageQuestion,
+};
 
 class CMsgDlg :
 	public CBaseSetupDlg
@@ -17,7 +26,7 @@ class CMsgDlg :
 	DECLARE_DYNCREATE(CMsgDlg)
 
 public:
-	CMsgDlg(CWnd* pParent = NULL);   // standard constructor
+	CMsgDlg(MessageType msgType = MessageUnknown, CWnd* pParent = NULL);   // standard constructor
 	virtual ~CMsgDlg();
 // Overrides
 	HRESULT OnButtonOK(IHTMLElement *pElement);
@@ -37,17 +46,27 @@ private:
 	_tstring m_Message;
 	_tstring m_OK;
 	_tstring m_Cancel;
+	MessageType m_MessageType;
 public:
 	virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
 	void SetTitle(LPCTSTR title);
 	void SetMessage(LPCTSTR msg);
 	void SetOkButtonText(LPCTSTR txt);
-	void SetCancelButtonText(LPCTSTR txt);
+	void SetCancelButtonText(LPCTSTR txt);	
+
+	static int ShowMessage(
+		MessageType msgType,
+		CSetupData *pSetupData,
+		__in LPCTSTR msg,
+		__in_opt LPCTSTR title = NULL);
 
 	static int ShowErrorMessage(
 		CSetupData *pSetupData,
 		__in LPCTSTR msg,
 		__in_opt LPCTSTR title = NULL);
+
+
+
 	static int ShowConfirmMessage(
 		CSetupData *pSetupData,
 		__in LPCTSTR msg,

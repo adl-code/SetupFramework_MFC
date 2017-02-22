@@ -7,10 +7,10 @@
 
 namespace Utils
 {
-	class CDownloadObserver
+	class CHttpDownloadObserver
 	{
 	public:
-		virtual ~CDownloadObserver()
+		virtual ~CHttpDownloadObserver()
 		{
 
 		}
@@ -31,6 +31,9 @@ namespace Utils
 
 		virtual void OnDownloadCompleted(
 			__in_opt void *param) = 0;
+
+		virtual bool ShouldPause(DWORD timeout /*milliseconds*/, __in_opt void *param) = 0;
+		virtual bool ShouldStop(DWORD timeout /*milliseconds*/, __in_opt void *param) = 0;
 	};
 
 	enum HTTP_RESULT
@@ -54,7 +57,7 @@ namespace Utils
 	public:
 		HTTP_RESULT Download(
 			__in LPCTSTR pszUrl,
-			__in_opt CDownloadObserver *observer,
+			__in_opt CHttpDownloadObserver *observer,
 			__in_opt void* observerParam = NULL,
 			__out_opt DWORD *pHttpErrorCode = NULL,
 			__out_opt _tstring *pHttpErrorString = NULL);
@@ -63,7 +66,7 @@ namespace Utils
 	private:
 		HTTP_RESULT ReceiveHttpResponse(
 			__in HINTERNET hRequest,
-			__in_opt CDownloadObserver *observer,
+			__in_opt CHttpDownloadObserver *observer,
 			__in_opt void* observerParam,
 			__out_opt DWORD *pHttpErrorCode,
 			__out_opt _tstring *pHttpErrorString);
@@ -72,6 +75,10 @@ namespace Utils
 			__in HINTERNET hRequest,
 			__out_opt DWORD *pHttpErrorCode,
 			__out_opt _tstring *pHttpErrorString);
+
+		bool HasUserCanceled(
+			__in_opt CHttpDownloadObserver *observer,
+			__in_opt void *observerParam);
 	};
 
 

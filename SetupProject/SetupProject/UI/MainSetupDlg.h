@@ -52,7 +52,14 @@ public:
 
 	virtual void OnFinish(int setupResult);
 
+private:
+	
 	// Handling user defined message to update UI
 	LRESULT OnUpdateUI(WPARAM wParam, LPARAM lParam);
+
+	void OnSetupFinish(int setupResult);
+
+	void OnSetupCompleted();
+	void OnSetupFailed();
 
 };

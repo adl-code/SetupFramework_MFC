@@ -45,6 +45,6 @@ namespace MySetup
 		
 		virtual HRESULT WINAPI ShowContextMenu(DWORD dwID, POINT *ppt, IUnknown *pcmdtReserved, IDispatch *pdispReserved);
 
-		static bool IsElementDisabled(IHTMLElement *pElement);
+		static bool IsElementDisabled(IHTMLElement *pElement);				
 	};
 }

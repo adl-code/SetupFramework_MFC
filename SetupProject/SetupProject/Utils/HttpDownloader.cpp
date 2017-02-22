@@ -1,7 +1,14 @@
 #include "stdafx.h"
 #include "HttpDownloader.h"
 
+#if defined DEBUG || defined _DEBUG
+#define DOWNLOAD_BUFFER_SIZE		1000 // Use small buffer for debugging purpose
+#else
 #define DOWNLOAD_BUFFER_SIZE		(2 * 1024 * 1024)		// 2 MB
+#endif
+
+#define WAIT_PAUSE_TIME 10
+#define WAIT_STOP_TIME 10
 
 Utils::CHttpDownloader::CHttpDownloader(LPCTSTR pAgent /*= NULL*/)
 {
@@ -18,7 +25,7 @@ Utils::CHttpDownloader::~CHttpDownloader()
 
 Utils::HTTP_RESULT Utils::CHttpDownloader::Download(
 	__in LPCTSTR pszUrl,
-	__in_opt CDownloadObserver *observer,
+	__in_opt CHttpDownloadObserver *observer,
 	__in_opt void* observerParam /*= NULL*/,
 	__out_opt DWORD *pHttpErrorCode /*= NULL*/,
 	__out_opt _tstring *pHttpErrorString /*= NULL*/)
@@ -71,20 +78,50 @@ Utils::HTTP_RESULT Utils::CHttpDownloader::Download(
 
 	for (DWORD proxyType : proxyTypePriorities)
 	{
+		if (HasUserCanceled(observer, observerParam))
+		{
+			httpResult = HTTP_USER_CANCELED;
+			break;
+		}
+
 		httpResult = HTTP_ERROR;
 		HINTERNET hInternet = InternetOpen(m_Agent.c_str(), proxyType, NULL, NULL, 0);
 		if (hInternet == NULL)
 			continue;
 		
+		if (HasUserCanceled(observer, observerParam))
+		{
+			httpResult = HTTP_USER_CANCELED;
+			InternetCloseHandle(hInternet);
+			break;			
+		}
+
 		HINTERNET hConnect = InternetConnect(hInternet, hostName.c_str(), url.nPort, userName.c_str(), password.c_str(), INTERNET_SERVICE_HTTP, 0, NULL);
 		if (hConnect)
 		{
+			if (HasUserCanceled(observer, observerParam))
+			{
+				httpResult = HTTP_USER_CANCELED;
+				InternetCloseHandle(hInternet);
+				InternetCloseHandle(hConnect);
+				break;
+			}
+
 			DWORD requestFlags = INTERNET_FLAG_RELOAD | INTERNET_FLAG_PRAGMA_NOCACHE;
 			requestFlags |= isHttps ? INTERNET_FLAG_SECURE : 0;
 
 			HINTERNET hRequest = HttpOpenRequest(hConnect, _T("GET"), httpObjectName.c_str(), NULL, NULL, ppAcceptTypes, requestFlags, NULL);
 			if (hRequest)
-			{
+			{				
+				if (HasUserCanceled(observer, observerParam))
+				{
+					httpResult = HTTP_USER_CANCELED;
+					InternetCloseHandle(hInternet);
+					InternetCloseHandle(hConnect);
+					InternetCloseHandle(hRequest);
+					break;
+				}				
+
 				if (HttpSendRequest(hRequest, NULL, 0, NULL, 0))
 					// Request has been sent successfully, now try receiving response
 					httpResult = ReceiveHttpResponse(hRequest, observer, observerParam, pHttpErrorCode, pHttpErrorString);
@@ -114,7 +151,7 @@ void Utils::CHttpDownloader::AddAcceptType(__in LPCTSTR acceptType)
 
 Utils::HTTP_RESULT Utils::CHttpDownloader::ReceiveHttpResponse(
 	__in HINTERNET hRequest,
-	__in_opt CDownloadObserver *observer,
+	__in_opt CHttpDownloadObserver *observer,
 	__in_opt void* observerParam,
 	__out_opt DWORD *pHttpErrorCode,
 	__out_opt _tstring *pHttpErrorString)
@@ -123,6 +160,9 @@ Utils::HTTP_RESULT Utils::CHttpDownloader::ReceiveHttpResponse(
 	DWORD dataSize;
 	HTTP_RESULT httpResult = HTTP_OK;
 
+	if (HasUserCanceled(observer, observerParam))
+		return HTTP_USER_CANCELED;
+	
 	// Get response status code and status text
 	if (!GetResponseStatus(hRequest, pHttpErrorCode, pHttpErrorString))
 		return HTTP_ERROR;
@@ -132,7 +172,7 @@ Utils::HTTP_RESULT Utils::CHttpDownloader::ReceiveHttpResponse(
 	if (HttpQueryInfo(hRequest, HTTP_QUERY_CONTENT_LENGTH | HTTP_QUERY_FLAG_NUMBER, &contentLen, &dataSize, NULL))
 	{
 		if (observer && !observer->OnDownloadStarting(contentLen, observerParam))
-			return HTTP_USER_CANCELED;
+			return HTTP_ERROR;
 	}
 	else
 		return HTTP_ERROR;
@@ -150,6 +190,12 @@ Utils::HTTP_RESULT Utils::CHttpDownloader::ReceiveHttpResponse(
 		DWORD sizeToRead = DOWNLOAD_BUFFER_SIZE;
 		DWORD actualBytesRead;
 
+		if (HasUserCanceled(observer, observerParam))
+		{
+			httpResult = HTTP_USER_CANCELED;
+			break;
+		}			
+		
 		if (sizeToRead > remain) sizeToRead = remain;
 
 		if (InternetReadFile(
@@ -220,5 +266,19 @@ bool Utils::CHttpDownloader::GetResponseStatus(
 	}
 
 	return true;
+}
+
+bool Utils::CHttpDownloader::HasUserCanceled(
+	__in_opt CHttpDownloadObserver *observer,
+	__in_opt void *observerParam)
+{
+	if (observer == NULL) return false;
+
+	while (observer->ShouldPause(WAIT_PAUSE_TIME, observerParam))
+	{
+		Sleep(100);
+	}
+
+	return observer->ShouldStop(WAIT_STOP_TIME, observerParam);
 }
 

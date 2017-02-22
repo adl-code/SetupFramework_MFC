@@ -256,6 +256,9 @@
     <None Include="res\MainSetupDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="res\MsgDlg.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="res\MyStyles.css" />
     <None Include="res\SetupProject.rc2" />
     <None Include="res\SplashDlg.htm">

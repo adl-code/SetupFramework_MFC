@@ -77,6 +77,16 @@
     <entry lang="en_us">Installing files ...</entry>
   </text>
 
+  <text id="setup_completed">
+    <entry>Đã hoàn thành cài đặt!</entry>
+    <entry lang="en_us">Setup completed!</entry>
+  </text>
+  
+  <text id="setup_failed">
+    <entry>Đã có lỗi xảy ra trong quá trình cài đặt.&lt;br/&gt;Xin vui lòng thử lại sau!</entry>
+    <entry lang="en_us">An error occured during the setup progress.&lt;br/&gt;Please try again later!</entry>
+  </text>
+  
   <text id="yes">
     <entry>Có</entry>
     <entry lang="en_us">Yes</entry>

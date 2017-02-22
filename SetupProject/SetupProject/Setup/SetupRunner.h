@@ -1,7 +1,10 @@
 #pragma once
 #include "Setup/SetupData.h"
 
+#include "Utils/HttpDownloader.h"
+
 using namespace MySetup;
+using namespace Utils;
 
 namespace SetupRunner
 {
@@ -21,6 +24,8 @@ namespace SetupRunner
 
 	bool Is64BitOs();
 
+	_tstring GenInstallerTempPath(__in SETUP_THREAD_DATA *pData);
+
 	typedef int(*SETUP_STAGE)(DWORD currentStage, DWORD totalStages, SETUP_THREAD_DATA *pData);
 	
 	DWORD CalculatePercentage(DWORD currentStage, DWORD totalStages, double stagePercentage);
@@ -34,5 +39,30 @@ namespace SetupRunner
 	// Invoke the installer
 	int SetupStageInvokeInstaller(DWORD currentStage, DWORD totalStages, SETUP_THREAD_DATA *pData);
 
+	class CDownloadObserver :
+		public CHttpDownloadObserver
+	{
+	public:
+		CDownloadObserver(LPCTSTR destPath, SETUP_THREAD_DATA *pSetupData, DWORD currentState, DWORD totalStages);
+		virtual ~CDownloadObserver();
+	private:
+		DWORD m_CurrentStage;
+		DWORD m_TotalStages;
+		DWORD m_TotalDownloadSize;
+		DWORD m_TotalDownloaded;
+		SETUP_THREAD_DATA *m_ThreadData;
+		HANDLE m_DestFile;
+	public:
+	
+		// Implement CHttpDownloadObserver interface
+		virtual bool OnDownloadStarting(__in DWORD dataSize, __in_opt void *param);
 
+		virtual bool OnDownloaded(__in_bcount(bufferSize) void *buffer, __in DWORD bufferSize, __in_opt void* param);
+
+		virtual void OnDownloadCompleted(__in_opt void *param);
+
+		virtual bool ShouldPause(DWORD timeout, __in_opt void *param);
+
+		virtual bool ShouldStop(DWORD timeout, __in_opt void *param);
+	};
 }

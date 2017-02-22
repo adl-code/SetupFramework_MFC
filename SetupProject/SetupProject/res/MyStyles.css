@@ -71,3 +71,31 @@ td {
     padding-bottom: 10px;
     padding-top: 10px;
 }
+
+.msg_icon_error {
+    width: 64px;
+	height: 64px;
+	margin: 10px;
+    background:url(res:/SETUP/ICON_ERROR) no-repeat;    
+}
+
+.msg_icon_critical {
+    width: 64px;
+	height: 64px;
+	margin: 10px;
+    background:url(res:/SETUP/ICON_CRITICAL) no-repeat;    
+}
+
+.msg_icon_warning {
+    width: 64px;
+	height: 64px;
+	margin: 10px;
+    background:url(res:/SETUP/ICON_WARNING) no-repeat;    
+}
+
+.msg_icon_question {
+    width: 64px;
+	height: 64px;
+	margin: 10px;
+    background:url(res:/SETUP/ICON_QUESTION) no-repeat;    
+}

@@ -12,8 +12,6 @@
 #include "UI/MainSetupDlg.h"
 
 #include "Utils/ResourceLoader.h"
-#include "Utils/HttpDownloader.h"
-
 
 void MySetup::InitSetup(
 	__inout CSetupData *setupData)

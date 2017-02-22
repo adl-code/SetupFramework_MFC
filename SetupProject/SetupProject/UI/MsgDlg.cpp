@@ -11,8 +11,9 @@
 
 IMPLEMENT_DYNCREATE(CMsgDlg, CDHtmlDialog)
 
-CMsgDlg::CMsgDlg(CWnd* pParent /*=NULL*/)
+CMsgDlg::CMsgDlg(MessageType msgType /*= MessageUnknown*/, CWnd* pParent /*=NULL*/)
 : CBaseSetupDlg(CMsgDlg::IDD, pParent)
+, m_MessageType(msgType)
 {
 
 }
@@ -62,6 +63,8 @@ void CMsgDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 	CBaseSetupDlg::OnDocumentComplete(pDisp, szUrl);
 
 	// TODO: Add your specialized code here and/or call the base class
+
+	// Update message, title, button captions
 	CString text = m_Title.c_str();
 	DDX_DHtml_ElementText(_T("title"), DISPID_IHTMLELEMENT_INNERHTML, text, FALSE);
 
@@ -73,6 +76,35 @@ void CMsgDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 
 	text = m_Cancel.c_str();
 	DDX_DHtml_ElementText(_T("button_cancel"), DISPID_IHTMLELEMENT_INNERHTML, text, FALSE);
+
+	// Update icon
+	IHTMLElement *pElement = NULL;
+	if (SUCCEEDED(GetElement(_T("message_icon"), &pElement)) && pElement)
+	{
+		BSTR className = NULL;
+		switch (m_MessageType)
+		{
+		case MessageWarning:
+			className = SysAllocString(_T("msg_icon_warning"));
+			break;
+		case MessageError:
+			className = SysAllocString(_T("msg_icon_error"));
+			break;
+		case MessageInfo:
+			className = SysAllocString(_T("msg_icon_info"));
+			break;
+		case MessageQuestion:
+			className = SysAllocString(_T("msg_icon_question"));
+			break;
+		}
+
+		if (className)
+		{			
+			pElement->put_className(className);
+			SysFreeString(className);
+		}
+		pElement->Release();
+	}
 }
 
 void CMsgDlg::SetTitle(LPCTSTR title)
@@ -95,14 +127,16 @@ void CMsgDlg::SetCancelButtonText(LPCTSTR txt)
 	if (txt) m_Cancel = txt;
 }
 
-int CMsgDlg::ShowErrorMessage(
-	__in CSetupData *pSetupData,
+
+int CMsgDlg::ShowMessage(
+	MessageType msgType,
+	CSetupData *pSetupData,
 	__in LPCTSTR msg,
 	__in_opt LPCTSTR title /*= NULL*/)
-{
+{	
 	if (pSetupData == NULL) return IDCANCEL;
 
-	CMsgDlg *msgDlg = new CMsgDlg();
+	CMsgDlg *msgDlg = new CMsgDlg(msgType);
 
 	if (msg) msgDlg->SetMessage(msg);
 
@@ -112,9 +146,17 @@ int CMsgDlg::ShowErrorMessage(
 		msgDlg->SetTitle(pSetupData->GetString(SID_APP_TITLE).c_str());
 
 	msgDlg->SetOkButtonText(pSetupData->GetString("ok").c_str());
-	msgDlg->Display(pSetupData, SETUP_SCREEN_ID_ERROR);
+	msgDlg->Display(pSetupData, SETUP_SCREEN_ID_MESSAGE);
 	delete msgDlg;
 	return IDOK;
+}
+
+int CMsgDlg::ShowErrorMessage(
+	__in CSetupData *pSetupData,
+	__in LPCTSTR msg,
+	__in_opt LPCTSTR title /*= NULL*/)
+{
+	return CMsgDlg::ShowMessage(MessageError, pSetupData, msg, title);
 }
 
 int CMsgDlg::ShowConfirmMessage(
@@ -124,7 +166,7 @@ int CMsgDlg::ShowConfirmMessage(
 {
 	if (pSetupData == NULL) return IDCANCEL;
 
-	CMsgDlg *msgDlg = new CMsgDlg();
+	CMsgDlg *msgDlg = new CMsgDlg(MessageQuestion);
 	
 	if (msg) msgDlg->SetMessage(msg);
 

@@ -2,7 +2,6 @@
 
 #include "Setup/SetupRunner.h"
 #include "Setup/ConfigData.h"
-
 #include "Utils/ResourceLoader.h"
 
 #define SETUP_CFG_CURRENT_INSTALLER	"current_installer"
@@ -98,6 +97,18 @@ bool SetupRunner::Is64BitOs()
 
 }
 
+_tstring SetupRunner::GenInstallerTempPath(__in SETUP_THREAD_DATA *pData)
+{
+	UNREFERENCED_PARAMETER(pData);
+
+	TCHAR tempDir[MAX_PATH];
+	TCHAR installerPath[MAX_PATH];
+	if (!GetTempPath(MAX_PATH, tempDir) || !GetTempFileName(tempDir, _T("ist"), 0, installerPath))
+		return _T("");
+
+	return installerPath;
+}
+
 DWORD SetupRunner::CalculatePercentage(DWORD currentStage, DWORD totalStages, double stagePercentage)
 {
 	if (currentStage == 0 || currentStage > totalStages || totalStages == 0 || stagePercentage > 100) return 0;
@@ -108,9 +119,64 @@ DWORD SetupRunner::CalculatePercentage(DWORD currentStage, DWORD totalStages, do
 // Download the online installer
 int SetupRunner::SetupStageDownloadInstaller(DWORD currentStage, DWORD totalStages, SETUP_THREAD_DATA *pData)
 {
+	std::string downloadUrl;
+
 	pData->setupObserver->UpdateStatus(pData->setupData->GetString(SID_DOWNLOADING_INSTALLER).c_str());
 
-	return SETUP_OK;
+	std::string installerSection = Is64BitOs() ? SETUP_CFG_ONLINE_INSTALLER_AMD64 : SETUP_CFG_ONLINE_INSTALLER_AMD64;
+
+	if (!pData->setupData->GetSetupConfig(installerSection.c_str(), "url", downloadUrl))
+	{
+		pData->setupData->LogA(LogError, "No resource configuration for %s found.\n", installerSection.c_str());
+		return SETUP_ERROR;
+	}
+
+	_tstring installerPath = SetupRunner::GenInstallerTempPath(pData);
+	if (installerPath.empty())
+	{
+		pData->setupData->LogA(LogError, "Failed to generate path name for installer.");
+		return SETUP_ERROR;
+	}
+
+	
+
+	CHttpDownloader *downloader = new CHttpDownloader();
+	if (downloader == NULL)
+	{
+		DeleteFile(installerPath.c_str());
+		return SETUP_ERROR;
+	}
+
+	CDownloadObserver *observer = new CDownloadObserver(installerPath.c_str(), pData, currentStage, totalStages);
+	if (observer == NULL)
+	{
+		delete downloader;
+		DeleteFile(installerPath.c_str());
+		return SETUP_ERROR;
+	}
+
+	int downloadResult = downloader->Download(UTF8_TO_TSTRING(downloadUrl).c_str(), observer, 0);
+
+	delete observer;
+	delete downloader;
+
+	pData->setupData->SetSetupConfig(SETUP_CFG_CURRENT_INSTALLER, SETUP_CFG_INSTALLER_PATH, TSTRING_TO_UTF8(installerPath).c_str());
+
+	int result;
+	switch (downloadResult)
+	{
+	case HTTP_OK:
+		result = SETUP_OK;
+		break;
+	case HTTP_USER_CANCELED:
+		result = SETUP_CANCEL;
+		break;
+	default:
+		result = SETUP_ERROR;
+		break;
+	}
+	
+	return result;
 }
 
 // Extract the offline installer
@@ -139,19 +205,17 @@ int SetupRunner::SetupStageExtractInstaller(DWORD currentStage, DWORD totalStage
 	}
 
 	// Write resource data to offline file
-	TCHAR tempDir[MAX_PATH];
-	TCHAR installerPath[MAX_PATH];
-	if (!GetTempPath(MAX_PATH, tempDir) ||
-		!GetTempFileName(tempDir, _T("ist"), 0, installerPath))
+	_tstring installerPath = SetupRunner::GenInstallerTempPath(pData);
+	if (installerPath.empty())
 	{
 		pData->setupData->LogA(LogError, "Failed to generate path name for installer.");
 		return SETUP_ERROR;
 	}
 
-	HANDLE hFile = CreateFile(installerPath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_HIDDEN, NULL);
+	HANDLE hFile = CreateFile(installerPath.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_HIDDEN, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		DeleteFile(installerPath);
+		DeleteFile(installerPath.c_str());
 		pData->setupData->LogA(LogError, "Failed to open temporary file \"%s\" to write setup data.%s", TSTRING_TO_UTF8(installerPath).c_str());
 		return SETUP_ERROR;
 	}
@@ -164,13 +228,17 @@ int SetupRunner::SetupStageExtractInstaller(DWORD currentStage, DWORD totalStage
 	DWORD written;
 	DWORD blockSize = 0;
 #if defined __DEBUG || defined DEBUG
-	blockSize = 1000;
+	blockSize = 1000; // Small buffer for debugging purpose
 #else
 	
 #endif	
 	while (remain)
 	{		
-		if (pData->setupData->ShouldPause(5)) continue;
+		if (pData->setupData->ShouldPause(5))
+		{
+			Sleep(100);
+			continue;
+		}
 
 		if (pData->setupData->ShouldStop(5))
 		{
@@ -238,4 +306,80 @@ int SetupRunner::SetupStageInvokeInstaller(DWORD currentStage, DWORD totalStages
 }
 
 
+SetupRunner::CDownloadObserver::CDownloadObserver(LPCTSTR destPath, SETUP_THREAD_DATA *pSetupData, DWORD currentState, DWORD totalStages)
+	: m_CurrentStage(currentState)
+	, m_TotalStages(totalStages)
+	, m_TotalDownloadSize(0)
+	, m_ThreadData(pSetupData)
+	, m_DestFile(INVALID_HANDLE_VALUE)
+{
+	ASSERT(m_ThreadData);
 
+	if (destPath)
+		m_DestFile = CreateFile(destPath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_HIDDEN, NULL);
+}
+
+SetupRunner::CDownloadObserver::~CDownloadObserver()
+{
+	if (m_DestFile != INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(m_DestFile);
+		m_DestFile = INVALID_HANDLE_VALUE;
+	}
+}
+
+bool SetupRunner::CDownloadObserver::OnDownloadStarting(__in DWORD dataSize, __in_opt void *param)
+{
+	UNREFERENCED_PARAMETER(param);
+
+	if (m_DestFile == INVALID_HANDLE_VALUE || dataSize == 0) return false;
+
+	m_TotalDownloaded = 0;
+	m_TotalDownloadSize = dataSize;
+	return true;
+}
+
+bool SetupRunner::CDownloadObserver::OnDownloaded(__in_bcount(bufferSize) void *buffer, __in DWORD bufferSize, __in_opt void* param)
+{
+	UNREFERENCED_PARAMETER(param);
+	if (m_DestFile == INVALID_HANDLE_VALUE) return false;
+
+	DWORD remain = bufferSize;
+	LPBYTE data = (LPBYTE)buffer;
+	DWORD offset = 0;
+	DWORD written;
+	while (remain)
+	{
+		if (!WriteFile(m_DestFile, data + offset, remain, &written, NULL))
+			return false;
+
+		offset += written;
+		remain -= written;
+
+		m_TotalDownloaded += written;
+		// Update progress
+		double percentage = (double)m_TotalDownloaded * 100 / m_TotalDownloadSize;
+#if defined DEBUG || defined _DEBUG
+		m_ThreadData->setupData->LogA(LogDebug, "Downloading Online Installer %d", (int)percentage);
+#endif
+		m_ThreadData->setupObserver->UpdateProgress(SetupRunner::CalculatePercentage(m_CurrentStage, m_TotalStages, percentage));
+	}
+	return true;
+}
+
+void SetupRunner::CDownloadObserver::OnDownloadCompleted(__in_opt void *param)
+{
+	UNREFERENCED_PARAMETER(param);
+}
+
+bool SetupRunner::CDownloadObserver::ShouldPause(DWORD timeout, __in_opt void *param)
+{
+	UNREFERENCED_PARAMETER(param);
+	return m_ThreadData->setupData->ShouldPause(timeout);
+}
+
+bool SetupRunner::CDownloadObserver::ShouldStop(DWORD timeout, __in_opt void *param)
+{
+	UNREFERENCED_PARAMETER(param);
+	return m_ThreadData->setupData->ShouldStop(timeout);
+}

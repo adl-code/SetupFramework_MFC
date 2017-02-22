@@ -12,7 +12,7 @@
       <screen id="config" resource="CONFIG_DLG" no_border="true" top_most="true"/>
 			<screen id="eula" resource="EULA_DLG" no_border="true" top_most="true"/>
       <screen id="main" resource="MAIN_DLG" no_border="true" top_most="true"/>
-      <screen id="error" resource="ERROR_DLG" no_border="true" top_most="true"/>
+      <screen id="message" resource="MSG_DLG" no_border="true" top_most="true"/>
       <screen id="confirm" resource="CONFIRM_DLG" no_border="true" top_most="true"/>
 		</setup_screens>
     <text      
@@ -24,8 +24,8 @@
       <online_installer
         manually_verify_server="false">
         <installer url="path_to_generic_installer"/> <!-- Default installer, we will use this link in case no specific platform is specified -->
-        <installer url="path_to_x86_installer" platform="x86"/>
-        <installer url="path_to_amd64_installer" platform="amd64"/>
+        <installer url="http://192.168.1.33/OnlineInstaller_x86.exe" platform="x86"/>
+        <installer url="http://192.168.1.33/OnlineInstaller_amd64.exe" platform="amd64"/>
         <trusted_certs>
           <!-- 
           List of trusted CERTs. This list is used only if "manually_verify_server" is turned on.

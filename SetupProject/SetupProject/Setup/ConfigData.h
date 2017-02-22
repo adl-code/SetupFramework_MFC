@@ -5,7 +5,7 @@
 #define SETUP_SCREEN_ID_EULA "eula"
 #define SETUP_SCREEN_ID_CONFIG "config"
 #define SETUP_SCREEN_ID_MAIN "main"
-#define SETUP_SCREEN_ID_ERROR "error"
+#define SETUP_SCREEN_ID_MESSAGE "message"
 #define SETUP_SCREEN_ID_CONFIRM "confirm"
 
 

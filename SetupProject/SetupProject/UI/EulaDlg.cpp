@@ -42,7 +42,7 @@ BOOL CEulaDlg::OnInitDialog()
 }
 
 BEGIN_MESSAGE_MAP(CEulaDlg, CDHtmlDialog)
-	ON_WM_CLOSE()
+	ON_WM_CLOSE()	
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(CEulaDlg)

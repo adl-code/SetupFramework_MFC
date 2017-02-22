@@ -16,6 +16,7 @@
 #define UPDATE_STATUS_TEXT	1
 #define UPDATE_ERROR_TEXT	2
 #define UPDATE_PROGRESS		3		// LPARAM: percentage
+#define UPDATE_FINISH		4		// WPARAM: result
 
 #define WM_UPDATE_UI		(WM_USER + 10)
 
@@ -51,7 +52,7 @@ BEGIN_MESSAGE_MAP(CMainSetupDlg, CDHtmlDialog)
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(CMainSetupDlg)
-	DHTML_EVENT_ONCLICK(_T("button_ok"), OnButtonOK)
+	DHTML_EVENT_ONCLICK(_T("button_next"), OnButtonOK)
 	DHTML_EVENT_ONCLICK(_T("button_cancel"), OnButtonCancel)
 END_DHTML_EVENT_MAP()
 
@@ -59,9 +60,10 @@ END_DHTML_EVENT_MAP()
 
 // CMainSetupDlg message handlers
 
-HRESULT CMainSetupDlg::OnButtonOK(IHTMLElement* /*pElement*/)
+HRESULT CMainSetupDlg::OnButtonOK(IHTMLElement* pElement)
 {
-	EndDialog(SETUP_OK);
+	if (!CBaseSetupDlg::IsElementDisabled(pElement))
+		EndDialog(SETUP_OK);
 	return S_OK;
 }
 
@@ -122,7 +124,8 @@ void CMainSetupDlg::OnError(__in LPCTSTR errorText)
 
 void CMainSetupDlg::OnFinish(int setupResult)
 {
-	EndDialog(setupResult);
+	if (IsWindow(this->GetSafeHwnd()))
+		PostMessage(WM_UPDATE_UI, UPDATE_FINISH, (LPARAM)setupResult);
 }
 
 void CMainSetupDlg::SetSetupProgress(DWORD percentage)
@@ -173,6 +176,63 @@ LRESULT CMainSetupDlg::OnUpdateUI(WPARAM wParam, LPARAM lParam)
 	case UPDATE_PROGRESS:
 		SetSetupProgress((DWORD)lParam);
 		break;
+	case UPDATE_FINISH:
+		OnSetupFinish((int)lParam);
+		break;
 	}
 	return 0;
+}
+
+void CMainSetupDlg::OnSetupFinish(int setupResult)
+{
+	switch (setupResult)
+	{
+	case SETUP_OK:
+		OnSetupCompleted();
+		break;
+	case SETUP_ERROR:
+		OnSetupFailed(); // Display error message
+		EndDialog(setupResult);
+		break;
+	default:
+		EndDialog(setupResult);
+		break;
+	}
+}
+
+void CMainSetupDlg::OnSetupCompleted()
+{
+	IHTMLElement *button = NULL;
+	VARIANT val;
+	val.vt = VT_BOOL;
+	val.boolVal = VARIANT_FALSE;
+
+	if (SUCCEEDED(GetElement(_T("button_next"), &button)))
+	{
+		button->setAttribute(_T("disabled"), val);
+		button->Release();
+	}
+
+	val.vt = VT_BOOL;
+	val.boolVal = VARIANT_TRUE;
+
+	if (SUCCEEDED(GetElement(_T("button_cancel"), &button)))
+	{
+		button->setAttribute(_T("disabled"), val);
+		button->Release();
+	}
+
+	CSetupData *pSetupData = CBaseSetupDlg::GetSetupData();
+	ASSERT(pSetupData);
+	CString status = pSetupData->GetString("setup_completed").c_str();
+	DDX_DHtml_ElementText(_T("status"), DISPID_IHTMLELEMENT_INNERHTML, status, FALSE);
+
+}
+
+void CMainSetupDlg::OnSetupFailed()
+{
+	CSetupData *pSetupData = CBaseSetupDlg::GetSetupData();
+	ASSERT(pSetupData);
+	_tstring msg = pSetupData->GetString("setup_failed");
+	CMsgDlg::ShowErrorMessage(pSetupData, msg.c_str());
 }

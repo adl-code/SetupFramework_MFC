@@ -190,6 +190,9 @@
     <None Include="res\ConfirmDlg.htm">
       <Filter>Resource Files\Html</Filter>
     </None>
+    <None Include="res\MsgDlg.htm">
+      <Filter>Resource Files\Html</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\SetupProject.ico">

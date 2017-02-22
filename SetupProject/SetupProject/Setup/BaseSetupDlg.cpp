@@ -3,7 +3,7 @@
 
 
 BEGIN_MESSAGE_MAP(MySetup::CBaseSetupDlg, CDHtmlDialog)
-
+	
 END_MESSAGE_MAP()
 
 MySetup::CBaseSetupDlg::CBaseSetupDlg(UINT dlgID, CWnd *parent)
@@ -101,14 +101,15 @@ BOOL MySetup::CBaseSetupDlg::PreTranslateMessage(MSG* pMsg)
 void MySetup::CBaseSetupDlg::PreInitDialog()
 {
 	// TODO: Add your specialized code here and/or call the base class
+
+	// Update screen width and height
 	std::string configValue;
 	LONG width, height;
 	LPCSTR screenId = m_ScreenId.c_str();
 	if (m_SetupData->GetScreenConfig(screenId, "width", configValue) && Utils::ParseLongConfig(configValue.c_str(), width) &&
 		m_SetupData->GetScreenConfig(screenId, "height", configValue) && Utils::ParseLongConfig(configValue.c_str(), height) &&
 		width > 0 && height > 0)
-	{
-		// Update screen width and height
+	{	
 		HMONITOR currentMonitor = MonitorFromWindow(GetSafeHwnd(), MONITOR_DEFAULTTONEAREST);
 		if (currentMonitor)
 		{
@@ -127,7 +128,10 @@ void MySetup::CBaseSetupDlg::PreInitDialog()
 		}	
 	}
 
+	// Disable the close butotn
 	GetSystemMenu(FALSE)->EnableMenuItem(SC_CLOSE, MF_BYCOMMAND | MF_DISABLED);
+
+	// Update window border and z-order
 	bool shouldHideBorder = false;
 	bool shouldBeTopMost = false;
 
@@ -143,7 +147,6 @@ void MySetup::CBaseSetupDlg::PreInitDialog()
 		ModifyStyleEx(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE, 0, SWP_FRAMECHANGED);
 		
 	}
-
 	if (shouldBeTopMost)
 		SetWindowPos(&wndTopMost, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
@@ -195,10 +198,15 @@ BOOL MySetup::CBaseSetupDlg::OnInitDialog()
 	CDHtmlDialog::OnInitDialog();
 
 	// TODO: Add your message handler code here
+
+	// Update dialog resource
 	std::string resourceID;
 	if (!m_SetupData->GetScreenConfig(m_ScreenId.c_str(), "resource", resourceID)) return SETUP_ERROR;
 	
 	LoadFromResource(UTF8_TO_TSTRING(resourceID).c_str());
+
+	// Disable drag n drop
+	this->m_pBrowserApp->put_RegisterAsDropTarget(VARIANT_FALSE);
 	
 	return TRUE;
 }
@@ -221,3 +229,4 @@ bool MySetup::CBaseSetupDlg::IsElementDisabled(IHTMLElement *pElement)
 		return true;
 	return false;
 }
+
