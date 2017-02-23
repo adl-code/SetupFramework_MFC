@@ -18,45 +18,13 @@ CMsXmlDoc::~CMsXmlDoc()
 
 CMsXmlNode *CMsXmlDoc::GetRoot()
 {
-	IXMLDOMNodeList *children = NULL;
-	IXMLDOMNode *root = NULL;
 	IXMLDOMElement *docElement = NULL;
 	HRESULT hr;
-
+	
 	if (!SUCCEEDED(hr = m_XmlDoc->get_documentElement(&docElement)))
 		return NULL;
 
-	if (!SUCCEEDED(hr = docElement->get_childNodes(&children)))
-	{
-		docElement->Release();
-		return NULL;
-	}
-
-	long len;
-	if (!SUCCEEDED(hr = children->get_length(&len)))
-		len = 0;
-	for (long i = 0; i < len; i++)
-	{
-		IXMLDOMNode *childNode = NULL;
-		if (SUCCEEDED(hr = children->get_item(i, &childNode)))
-		{
-			DOMNodeType nodeType;
-			if (SUCCEEDED(hr = childNode->get_nodeType(&nodeType)) &&
-				nodeType == NODE_ELEMENT)
-			{
-				root = childNode;
-				break;
-			}
-			childNode->Release();
-		}
-	}
-	
-	children->Release();
-	docElement->Release();
-
-	if (root == NULL) return NULL;
-
-	return new CMsXmlNode(root);
+	return new CMsXmlNode(docElement);
 }
 
 // Parse from an UTF8-encoded XML string

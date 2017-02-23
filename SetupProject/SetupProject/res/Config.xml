@@ -1,5 +1,5 @@
-﻿<xml encoding="utf-8" version="1.0">
-<setup_config scheme="yandex">
+﻿<?xml version="1.0" ?>
+<setup_config scheme="default">
 	<scheme id="default">
 		<setup_screens>
       <screen id="splash" resource="SPLASH_DLG" splash_time="500" fade_in_time="100" fade_out_time="100" no_border="true" top_most="true"/>
@@ -76,4 +76,3 @@
     </installer>
   </scheme>
 </setup_config>
-</xml>
