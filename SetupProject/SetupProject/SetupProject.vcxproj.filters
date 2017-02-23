@@ -186,7 +186,6 @@
     <None Include="res\MainSetupDlg.htm">
       <Filter>Resource Files\Html</Filter>
     </None>
-    <None Include="MsgDlg.htm" />
     <None Include="res\ConfirmDlg.htm">
       <Filter>Resource Files\Html</Filter>
     </None>

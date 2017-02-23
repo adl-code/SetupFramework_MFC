@@ -6,9 +6,14 @@ BEGIN_MESSAGE_MAP(MySetup::CBaseSetupDlg, CDHtmlDialog)
 	
 END_MESSAGE_MAP()
 
+BEGIN_DHTML_EVENT_MAP(MySetup::CBaseSetupDlg)
+	
+END_DHTML_EVENT_MAP()
+
 MySetup::CBaseSetupDlg::CBaseSetupDlg(UINT dlgID, CWnd *parent)
 : CDHtmlDialog(MAKEINTRESOURCE(dlgID), NULL, parent)
 , m_SetupData(NULL)
+, m_IsMoving(false)
 {
 
 }
@@ -128,8 +133,11 @@ void MySetup::CBaseSetupDlg::PreInitDialog()
 		}	
 	}
 
-	// Disable the close butotn
+	// Disable the close button
 	GetSystemMenu(FALSE)->EnableMenuItem(SC_CLOSE, MF_BYCOMMAND | MF_DISABLED);
+
+	// Make sure that every dialog has an entry in the taskbar
+	ModifyStyleEx(0, WS_EX_APPWINDOW);
 
 	// Update window border and z-order
 	bool shouldHideBorder = false;
@@ -233,5 +241,44 @@ bool MySetup::CBaseSetupDlg::IsElementDisabled(IHTMLElement *pElement)
 		&& disabled.vt == VT_BOOL && disabled.boolVal == VARIANT_TRUE)
 		return true;
 	return false;
+}
+
+HRESULT MySetup::CBaseSetupDlg::OnBodyMouseDown(IHTMLElement *pElement)
+{
+	UNREFERENCED_PARAMETER(pElement);
+	POINT pt;
+	RECT rc;
+	//SetCapture();
+	
+	GetCursorPos(&pt);
+	GetWindowRect(&rc);
+
+	m_MyMouse.x = pt.x - rc.left;
+	m_MyMouse.y = pt.y - rc.top;
+	m_IsMoving = true;
+	return S_OK;
+}
+
+HRESULT MySetup::CBaseSetupDlg::OnBodyMouseUp(IHTMLElement *pElement)
+{
+	UNREFERENCED_PARAMETER(pElement);
+	//ReleaseCapture();
+	m_IsMoving = false;
+	return S_OK;
+}
+
+HRESULT MySetup::CBaseSetupDlg::OnBodyMouseMove(IHTMLElement *pElement)
+{
+	UNREFERENCED_PARAMETER(pElement);
+	if (m_IsMoving)
+	{		
+		POINT pt;
+				
+		GetCursorPos(&pt);
+		pt.x -= m_MyMouse.x;
+		pt.y -= m_MyMouse.y;
+		SetWindowPos(NULL, pt.x, pt.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	}
+	return S_OK;
 }
 

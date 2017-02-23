@@ -238,9 +238,6 @@
     <ResourceCompile Include="SetupProject.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MsgDlg.htm">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="res\ConfigDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>

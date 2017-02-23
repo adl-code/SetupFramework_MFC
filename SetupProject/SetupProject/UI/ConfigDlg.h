@@ -22,8 +22,8 @@ public:
 	virtual ~CConfigDlg();
 // Overrides
 	HRESULT OnButtonNext(IHTMLElement *pElement);
-	HRESULT OnButtonCancel(IHTMLElement *pElement);	
-
+	HRESULT OnButtonCancel(IHTMLElement *pElement);
+	
 // Dialog Data
 	enum { IDD = IDD_CONFIG_DIALOG };
 

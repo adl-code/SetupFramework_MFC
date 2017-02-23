@@ -10,7 +10,6 @@
 
 IMPLEMENT_DYNCREATE(CConfigDlg, CDHtmlDialog)
 
-
 CConfigDlg::CConfigDlg(CWnd* parent /*= NULL*/)
 : CBaseSetupDlg(CConfigDlg::IDD, parent)
 {
@@ -40,6 +39,11 @@ END_MESSAGE_MAP()
 BEGIN_DHTML_EVENT_MAP(CConfigDlg)
 	DHTML_EVENT_ONCLICK(_T("button_next"), OnButtonNext)
 	DHTML_EVENT_ONCLICK(_T("button_cancel"), OnButtonCancel)
+	/*
+	DHTML_EVENT_ONMOUSEDOWN(_T("the_body"), OnBodyMouseDown)
+	DHTML_EVENT_ONMOUSEUP(_T("the_body"), OnBodyMouseUp)
+	DHTML_EVENT_ONMOUSEMOVE(_T("the_body"), OnBodyMouseMove)
+	*/
 END_DHTML_EVENT_MAP()
 
 
@@ -58,6 +62,7 @@ HRESULT CConfigDlg::OnButtonCancel(IHTMLElement* /*pElement*/)
 	EndDialog(SETUP_CANCEL);
 	return S_OK;
 }
+
 
 // Load configurations from setup data structure and display it
 void CConfigDlg::LoadConfig()
