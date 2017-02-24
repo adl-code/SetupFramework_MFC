@@ -49,11 +49,15 @@ bool Utils::CStringLoader::GetString(
 	__in_opt const char *langID /*= NULL /* The language ID, specify NULL for the default (unnamed) language */)
 {
 	if (stringID == NULL) return false;
-	CStringIdMap::iterator itor = m_StringIdMap.find(stringID);
+	std::string theID = MakeLowerA(stringID);
+
+	CStringIdMap::iterator itor = m_StringIdMap.find(theID);
 	if (itor == m_StringIdMap.end()) return false;	// ID not found
 
 	std::string languageId(langID ? langID : "");	// Use empty string for default language
 
+	
+	languageId = MakeLowerA(languageId);
 	CStringLangMap::iterator stringItor = itor->second.find(languageId);
 	if (stringItor == itor->second.end())
 	{
