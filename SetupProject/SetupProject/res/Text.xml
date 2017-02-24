@@ -3,44 +3,44 @@
   <text id="app_title">
     <entry>MySetup</entry>
   </text>
-  
-	<text id="ok">
-		<entry>OK</entry>		
-	</text>
-	
-	<text id="cancel">
-		<entry>Hủy bỏ</entry>
-		<entry lang="en_us">Cancel</entry>
-	</text>
+
+  <text id="ok">
+    <entry>OK</entry>
+  </text>
+
+  <text id="cancel">
+    <entry>Hủy bỏ</entry>
+    <entry lang="en_us">Cancel</entry>
+  </text>
 
   <text id="back">
     <entry>Quay lại</entry>
     <entry lang="en_us">Back</entry>
   </text>
-  
-	<text id="next">
-		<entry>Tiếp tục</entry>
-		<entry lang="en_us">Next</entry>
-	</text>
+
+  <text id="next">
+    <entry>Tiếp tục</entry>
+    <entry lang="en_us">Next</entry>
+  </text>
 
   <text id="finish">
     <entry>Hoàn tất</entry>
     <entry lang="en_us">Finish</entry>
   </text>
-	
-	<text id="read_license">
-		<entry>Vui lòng đọc kĩ các điều khoản sau:</entry>
-		<entry lang="en_us">Please read the license carefully:</entry>
-	</text>
-	<text id="accept_eula">
-		<entry>&lt;B&gt;Tôi chấp nhận các điều khoản trong thỏa thuận sử dụng&lt;/B&gt;</entry>
-		<entry lang="en_us">&lt;B&gt;I accept the terms in the license agreement&lt;/B&gt;</entry>
-	</text>
-	
-	<text id="eula">
-		<entry>Thỏa thuận sử dụng</entry>
-		<entry lang="en_us">End User License Agreement</entry>
-	</text>
+
+  <text id="read_license">
+    <entry>Vui lòng đọc kĩ các điều khoản sau:</entry>
+    <entry lang="en_us">Please read the license carefully:</entry>
+  </text>
+  <text id="accept_eula">
+    <entry>&lt;B&gt;Tôi chấp nhận các điều khoản trong thỏa thuận sử dụng&lt;/B&gt;</entry>
+    <entry lang="en_us">&lt;B&gt;I accept the terms in the license agreement&lt;/B&gt;</entry>
+  </text>
+
+  <text id="eula">
+    <entry>Thỏa thuận sử dụng</entry>
+    <entry lang="en_us">End User License Agreement</entry>
+  </text>
 
   <text id="configuration">
     <entry>Cấu hình</entry>
@@ -81,12 +81,12 @@
     <entry>Đã hoàn thành cài đặt!</entry>
     <entry lang="en_us">Setup completed!</entry>
   </text>
-  
+
   <text id="setup_failed">
     <entry>Đã có lỗi xảy ra trong quá trình cài đặt.&lt;br/&gt;Xin vui lòng thử lại sau!</entry>
     <entry lang="en_us">An error occured during the setup progress.&lt;br/&gt;Please try again later!</entry>
   </text>
-  
+
   <text id="yes">
     <entry>Có</entry>
     <entry lang="en_us">Yes</entry>
@@ -100,5 +100,29 @@
   <text id="confirm_exit">
     <entry>Bạn có muốn chấm dứt quá trình cài đặt không?</entry>
     <entry lang="en_us">Do you really want to exit?</entry>
+  </text>
+
+  <text id="eula_content">
+    <entry>
+      &lt;H3&gt;Cách làm xoài lắc của người miền Nam về cơ bản giống món xoài dầm ở miền Bắc, chỉ khác vị muối tiêu.&lt;/H3&gt;
+      Nguyên liệu bao gồm xoài gọt sẵn, đường, nước mắm, muối tôm (muối ớt).
+
+      &lt;H3&gt;Hướng dẫn cách làm xoài lắc&lt;/H3&gt;
+      &lt;UL&gt;
+      &lt;LI&gt;Đun một bát đường và 1/3 bát nước mắm (bát ăn cơm) cho tan sánh, để nguội.&lt;/LI&gt;
+      &lt;LI&gt;Xoài cắt tuỳ ý (không dày không mỏng quá), trộn ớt bột cho đều.&lt;/LI&gt;
+      &lt;LI&gt;Đổ nước mắm đường vào, thêm muối tôm xóc đều ( các bạn có thể tùy khẩu vị mà cho nhiều nước mắm ít muối tôm, hoặc ngược lại).&lt;/LI&gt;
+      &lt;LI&gt;Để lạnh 2-3 giờ là ăn được (nếu xoài chua quá thì phải để lâu hơn một tý mới ngấm, tầm 4-5 giờ).&lt;/LI&gt;
+      &lt;/UL&gt;
+
+      &lt;H3&gt;Lưu ý cách làm xoài lắc&lt;/H3&gt;
+      &lt;UL&gt;
+      &lt;LI&gt;Các bạn có thể làm ở nhà và nêm nếm theo khẩu vị, vừa dễ làm lại ăn rất vừa miệng.&lt;/LI&gt;
+      &lt;LI&gt;Nên cho lượng muối tôm vừa ăn.&lt;/LI&gt;
+      &lt;LI&gt;Nên làm vừa phải ăn trong 1-2 ngày, xoài ăn vẫn giòn ngon.&lt;/LI&gt;
+      &lt;LI&gt;Nên cho vào tủ lạnh ngay sau khi dầm và để trong hộp kín có nắp đậy.&lt;/LI&gt;
+      &lt;LI&gt;Ngoài ra các bạn có thể thay xoài bằng quả dứa (thơm), ổi, cóc cũng ngon không kém, đặc biệt là dứa... theo cách làm xoài lắc này.&lt;/LI&gt;
+      &lt;/UL&gt;
+    </entry>
   </text>
 </text_table>

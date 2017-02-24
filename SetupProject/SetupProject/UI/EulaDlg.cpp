@@ -94,15 +94,14 @@ void CEulaDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 	// TODO: Add your specialized code here and/or call the base class
 
 	// Load the EULA content
-	
-	DWORD eulaSize;
-	const char* eulaBuf = Utils::LoadUtf8Resource(NULL, _T("SETUP"), _T("EULA"), eulaSize);
-	if (eulaBuf && eulaSize)
-	{
-		std::string eula;
-		eula.append(eulaBuf, eulaSize);
+	CSetupData *pSetupData = GetSetupData();
+	ASSERT(pSetupData);
+
+	_tstring eula = pSetupData->GetString("eula_content");
 		
-		CString eulaContent = UTF8_TO_TSTRING(eula.c_str()).c_str();
+	if (!eula.empty())
+	{	
+		CString eulaContent = eula.c_str();
 		
 		DDX_DHtml_ElementText(_T("eula"), DISPID_IHTMLELEMENT_INNERHTML, eulaContent, FALSE);
 		

@@ -1,23 +1,25 @@
 ﻿<?xml version="1.0" ?>
 <setup_config scheme="default">
-	<scheme id="default">
-		<setup_screens>
+  <scheme id="default">
+    <setup_screens>
       <screen id="splash" resource="SPLASH_DLG" splash_time="500" fade_in_time="100" fade_out_time="100" no_border="true" top_most="true"/>
       <screen id="config" resource="CONFIG_DLG" no_border="false" top_most="true" title="configuration"/>
-			<screen id="eula" resource="EULA_DLG" no_border="false" top_most="true" title="eula"/>
+      <screen id="eula" resource="EULA_DLG" no_border="false" top_most="true" title="eula"/>
       <screen id="main" resource="MAIN_DLG" no_border="false" top_most="true" title="app_title"/>
       <screen id="message" resource="MSG_DLG" no_border="false" top_most="true" title="app_title"/>
       <screen id="confirm" resource="CONFIRM_DLG" no_border="false" top_most="true" title="app_title"/>
-		</setup_screens>
-    <text      
+    </setup_screens>
+    <text
       res_type="SETUP"
-      res_name="TEXT">
+      res_name="TEXT"
+      lang_id="en_US">
     </text>
     <installer>
       <!-- configure online/offline installer here -->
       <online_installer
         manually_verify_server="false">
-        <installer url="path_to_generic_installer"/> <!-- Default installer, we will use this link in case no specific platform is specified -->
+        <installer url="path_to_generic_installer"/>
+        <!-- Default installer, we will use this link in case no specific platform is specified -->
         <installer url="http://192.168.1.33/OnlineInstaller_x86.exe" platform="x86"/>
         <installer url="http://192.168.1.33/OnlineInstaller_amd64.exe" platform="amd64"/>
         <trusted_certs>
@@ -29,9 +31,10 @@
           <cert res_type="CERT" res_name="CERT2" />
         </trusted_certs>
       </online_installer>
-      
+
       <offline_installer>
-        <installer res_type="SETUP" res_name="INSTALLER"/> <!-- Default installer, we will use this link in case no specific platform is specified -->
+        <installer res_type="SETUP" res_name="INSTALLER"/>
+        <!-- Default installer, we will use this link in case no specific platform is specified -->
         <installer res_type="SETUP" res_name="INSTALLER_X86" platform="x86" compression="gzip"/>
         <installer res_type="SETUP" res_name="INSTALLER_AMD64" platform="amd64" compression="zip"/>
       </offline_installer>
@@ -39,8 +42,8 @@
   </scheme>
   <scheme id="yandex">
     <!-- Scheme inspired by Yandex Browser setup -->
-    <setup_screens>      
-      <screen id="config" resource="CONFIG_DLG_YANDEX" no_border="true" top_most="true" title="configuration" width="648" height="233"/>      
+    <setup_screens>
+      <screen id="config" resource="CONFIG_DLG_YANDEX" no_border="true" top_most="true" title="configuration" width="648" height="233"/>
       <screen id="main" resource="MAIN_DLG_YANDEX" no_border="true" top_most="true" title="app_title" width="178" height="233"/>
       <screen id="message" resource="MSG_DLG" no_border="false" top_most="true" title="app_title"/>
       <screen id="confirm" resource="CONFIRM_DLG" no_border="false" top_most="true" title="app_title"/>

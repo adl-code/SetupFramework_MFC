@@ -53,7 +53,7 @@ void MySetup::CBaseSetupDlg::UpdateElementText(
 			if (SUCCEEDED(hr = pDispatch->QueryInterface(IID_IHTMLElement, (LPVOID*)&pElement)))
 			{				
 				VARIANT textID;
-				if (SUCCEEDED(hr = pElement->getAttribute (_T("text_id"), 0, &textID)) && textID.vt == VT_BSTR)
+				if (SUCCEEDED(hr = pElement->getAttribute(_T("text_id"), 0, &textID)) && textID.vt == VT_BSTR)
 				{
 					std::string stringID;
 					stringID = Utils::UnicodeToUtf8(textID.bstrVal);
