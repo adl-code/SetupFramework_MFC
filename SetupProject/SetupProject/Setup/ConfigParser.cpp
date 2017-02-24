@@ -55,9 +55,13 @@ void ConfigParser::ParseXmlSetupText(
 	// Load text resource
 	_tstring textResType;
 	_tstring textResName;
+	_tstring langID;
 	if (setupText->GetAttribute(_T("res_type"), textResType) &&
 		setupText->GetAttribute(_T("res_name"), textResName))
 		setupData->InitStringLoader(NULL, textResType.c_str(), textResName.c_str());
+
+	if (setupText->GetAttribute(_T("lang_id"), langID))
+		setupData->SetLanguageID(TSTRING_TO_UTF8(langID).c_str());
 }
 
 void ConfigParser::ParseXmlSetupOfflineInstaller(

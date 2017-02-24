@@ -160,6 +160,7 @@ namespace MySetup
 		// String resource methods
 		const Utils::CStringLoader *GetStringLoader();
 		std::string GetLanguageID() const;
+		void SetLanguageID(const char *langID);
 
 		void SetManuallyVerifyServer(bool manually);
 		bool ShouldManuallyVerifyServer() const;

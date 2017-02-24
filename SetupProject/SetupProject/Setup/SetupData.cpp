@@ -241,6 +241,11 @@ std::string MySetup::CSetupData::GetLanguageID() const
 	return m_LanguageID;
 }
 
+void MySetup::CSetupData::SetLanguageID(const char *langID)
+{
+	if (langID) m_LanguageID = langID;
+}
+
 void MySetup::CSetupData::SetManuallyVerifyServer(bool manually)
 {
 	m_ShouldManuallyVerifyServer = manually;
