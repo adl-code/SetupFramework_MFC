@@ -15,8 +15,8 @@
     - [Screen attributes](#screen-attributes)
     - [Screen resource](#screen-resource)
   - [String table](#string-table)
-  - [Online installers](#online-installers)
-  - [Offline installers](#offline-installers)
+  - [Online installer](#online-installer)
+  - [Offline installer](#offline-installer)
 
 # About #
 This is a very simple setup framework built on top of the Microsoft Foundation Class (MFC). It allows configuring the setup progress via several XML, HTML and CSS files.
@@ -30,8 +30,8 @@ This is a very simple setup framework built on top of the Microsoft Foundation C
 ## Build configurations ##
 There are 4 build configurations:
 
-| Configuration name | Has debug information? | Installer type |
-| :--- | :--- | :--- |
+| Configuration name | Has debug info? | Installer type |
+| :--- | :---: | :--- |
 | Debug_Online | :heavy_check_mark: | Download installer from *remote sites* |
 | Debug_Offline | :heavy_check_mark: | Drop installer from *embedded resource* |
 | Release_Online | | Download installer from *remote sites* |
@@ -88,11 +88,11 @@ The setup scheme has the following structure:
     - ...
   - **text**: the string table used the graphical user interface. Details are described [here](#string-table).
   - **installer**: the online/offline installers.
-    - **online_installer**: list of online installers. Details are described [here](#online-installers)
+    - **online_installer**: list of online installers. Details are described [here](#online-installer)
       - **installer1**: an online installer entry.
       - **installer2**: an online installer entry.
       - ...
-    - **offline_installer**: list of offline installers. Details are described [here](#offline-installers)
+    - **offline_installer**: list of offline installers. Details are described [here](#offline-installer)
       - **installer1**: an offline installer entry.
       - **installer2**: an offline installer entry.
       - ...
@@ -187,8 +187,8 @@ The "*message*" and "*confirm*" screens are just helper screens and are not incl
 Each setup screen (dialog) entry has the following attributes:
 
 | Attribute name | Required | Type | Meaning |
-| :--- | :--- | :--- | :--- |
-| id | :heavy_check_mark | text | The screen type. It must be one of the [predefined types](#screen-types). |
+| :--- | :---: | :--- | :--- |
+| id | :heavy_check_mark: | text | The screen type. It must be one of the [predefined types](#screen-types). |
 | resource | :heavy_check_mark: | text | The **resource name** of the [HTML file](#screen-resource) describing the screen's components and layout. |
 | no_border | | text | Set to "*true*" or "*yes*" to indicate that this screen has no border, set to "*false*" or "*no*" otherwise. This value is set to "*false*" if not explicitly specified. |
 | top_most | | text | Set to "true" or "yes" to indicate that this screen should be top-most, set to "*false*" or "*no*" otherwise. The value is set to "*false*" if not explicitly specified. |
@@ -235,6 +235,42 @@ The string table stores strings used by the graphical user interface. Each strin
 
 ```
 
-## Online installers ##
+## Online installer ##
+The online installer may contain multiple entries describing the installer URLs for different platforms:
 
-## Offline installers ##
+```xml
+<online_installer>
+    <!-- Each platform may have its own installer -->
+    <installer url="URL to the x86 installer" platform="x86" />
+    <installer url="URL to the amd64 installer" platform="amd64" />
+    
+    <!-- If just one generic installer is necessary for all platforms,
+    then we don't have to specify the "platform" attribute -->
+    <installer url="URL to the default installer" />
+</online_installer>
+```
+
+## Offline installer ##
+The offline installer may contain multiple entries describing the installer's embedded resources for different platforms. Each entry must specify the type and name of the embedded resource.
+
+```xml
+<offline_installer>
+    <!-- Each platform may have its own installer -->
+    <installer
+        res_type="x86 installer resource type"
+        res_name="x86 installer resource name"
+        platform="x86" />
+
+    <installer
+        res_type="amd64 installer resource type"
+        res_name="amd64 installer resource name"
+        platform="amd64" />
+
+    <!-- If just one generic installer is necessary for all platforms,
+    then we don't have to specify the "platform" attribute -->
+    <installer
+        res_type="Default installer resource type"
+        res_name="Default installer resource name"/>
+</offline_installer>
+```
+
