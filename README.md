@@ -9,7 +9,11 @@
   - [Setup resources](#setup-resources)
   - [The main setup configuration file](#the-main-configuration-file)
   - [Setup schemes](#setup-schemes)
-  - [Setup screens (dialogs)](#setup-screens-dialogs)
+  - [Setup screens (dialogs)](#setup-screen-dialog)
+    - [Screen types](#screen-types)
+    - [Screen sequence](#screen-sequence)
+    - [Screen attributes](#screen-attributes)
+    - [Screen resource](#screen-resource)
   - [String table](#string-table)
   - [Online installers](#online-installers)
   - [Offline installers](#offline-installers)
@@ -28,10 +32,10 @@ There are 4 build configurations:
 
 | Configuration name | Has debug information? | Installer type |
 | :--- | :--- | :--- |
-Debug_Online | :white_check_mark: | Download installer from *remote sites*
-Debug_Offline | :white_check_mark: | Drop installer from *embedded resource*
-Release_Online | :x: | Download installer from *remote sites*
-Release_Offline | :x: | Drop installer from *embedded resource*
+| Debug_Online | :white_check_mark: | Download installer from *remote sites* |
+| Debug_Offline | :white_check_mark: | Drop installer from *embedded resource* |
+| Release_Online | :x: | Download installer from *remote sites* |
+| Release_Offline | :x: | Drop installer from *embedded resource* |
 
 ## Build instructions ##
 * Open [SetupProject/SetupProject.sln](SetupProject/SetupProject.sln).
@@ -46,12 +50,13 @@ All resource files used by the project are stored in the [SetupProject/SetupProj
 Each resource entry is referenced in this documentation by the following notation: **RES_TYPE**/**RES_NAME**.
 
 ## The main setup configuration file ##
-The main setup configuration file is the resource entry named **SETUP**/**CONFIG**. This is an UTF-8 encoded XML file having the following structure:
-- setup_config (root entry, the default scheme ID is specified here)
-    - scheme 1
-    - scheme 2
+The main setup configuration file is the resource entry named **SETUP**/**CONFIG**. This is an XML file having the following structure:
+- **setup_config** (root entry, the default scheme ID is specified here)
+    - **scheme 1**
+    - **scheme 2**
     - ...
     
+In XML format:
 ```xml
 <?xml version="1.0" ?>
 <setup_config scheme="scheme_id">
@@ -74,9 +79,126 @@ Each setup scheme describes a complete setup progress. The configuration file ma
 The chosen scheme's ID is specified in the "**scheme**" attribute of the root entry **setup_config**. The setup framework will then scan all the schemes and find the one whom the ID matches to proceed. The structure of an setup scheme is described in the next section.
 
 ## Setup schemes ##
+The setup scheme has the following structure:
 
+- **scheme**
+  - **setup_screens**: sequence of setup screens (dialogs). Details are described [here](#setup_screens_dialogs).
+    - **screen 1**: an setup screen entry.
+    - **screen 2**: an setup screen entry.
+    - ...
+  - **text**: the string table used the graphical user interface. Details are described [here](#string-table).
+  - **installer**: the online/offline installers.
+    - **online_installer**: list of online installers. Details are described [here](#online-installers)
+      - **installer1**: an online installer entry.
+      - **installer2**: an online installer entry.
+      - ...
+    - **offline_installer**: list of offline installers. Details are described [here](#offline-installers)
+      - **installer1**: an offline installer entry.
+      - **installer2**: an offline installer entry.
+      - ...
 
-## Setup screens (dialogs) ##
+In XML format:
+```xml
+<scheme id="my_id">
+    <setup_screens>
+        <!-- Sequence of setup screens.
+        They will be displayed in the same order as described in this XML -->
+        <screen id="screen1"></screen>
+        <screen id="screen2"></screen>
+    </setup_screens>
+    
+    <text></text> <!-- String table -->
+    <installer>
+        <online_installer>
+            <!-- Online installer entries -->
+            <installer></installer>
+            <installer></installer>
+        </online_installer>
+        
+        <offline_installer>
+            <!-- Offline installer entries -->
+            <installer></installer>
+            <installer></installer>
+        </offline_installer>
+    </installer>
+</scheme>
+```
+
+## Setup screen (dialog) ##
+### Screen types ###
+There are several predefined types of dialog:
+
+| Type | Description | Example |
+| :--- | :--- | :--- |
+| **config** | Allowing user to change the setup configuration (create shortcuts, make system auto start ...). |
+| **eula** | Displaying End User License Agreement (EULA). |
+| **main** | The main setup screen displaying installing progress and status. |
+| **message** | Helper screen displaying information message, error message ... |
+| **confirm** | Helper screen displaying confirmation message (yes/no question). |
+
+### Screen sequence ###
+The "*message*" and "*confirm*" screens are just helper screens and are not included in the setup sequence. The **main** screen is always the latest screen to be shown. Thus other screen types (**config** and **eula**) are optional and are displayed in the same order as described in the configuration xml file. Some examples of screen sequence configuration are shown below.
+
+#### Example #1: config - eula - main ####
+```xml
+<setup_screens>
+    <screen id="config" ...>...</screen>
+    <screen id="eula" ...>...</screen>
+    <screen id="main" ...>...</screen>
+</setup_screens>
+```
+
+#### Example #2: eula - config - main ###
+```xml
+<setup_screens>
+    <screen id="eula" ...>...</screen>
+    <screen id="config" ...>...</screen>
+    <screen id="main" ...>...</screen>
+</setup_screens>
+```
+
+#### Example #3: eula - main ###
+```xml
+<setup_screens>
+    <!-- The "config" screen is omitted -->
+    <screen id="eula" ...>...</screen>
+    <screen id="main" ...>...</screen>
+</setup_screens>
+```
+
+#### Example #4: config - main ###
+```xml
+<setup_screens>
+    <!-- The "eula" screen is omitted -->
+    <screen id="config" ...>...</screen>
+    <screen id="main" ...>...</screen>
+</setup_screens>
+```
+
+#### Example #5: main ###
+```xml
+<setup_screens>
+    <!-- Both the "config" screen and "eula" screen are omitted -->
+    <screen id="main" ...>...</screen>
+</setup_screens>
+```
+
+### Screen attributes ###
+Each setup screen (dialog) entry has the following attributes:
+
+| Attribute name | Required | Type | Meaning |
+| :--- | :--- | :--- | :--- |
+| id | <ul><li>- [x]</li></ul> | text | The screen type. It must be one of the [predefined types](#screen-types). |
+| resource | <ul><li>- [x]</li></ul> | text | The **resource name** of the [HTML file](#screen-resource) describing the screen's components and layout. |
+| no_border | <ul><li>- [ ]</li></ul> | text | Set to "*true*" or "*yes*" to indicate that this screen has no border, set to "*false*" or "*no*" otherwise. This value is set to "*false*" if not explicitly specified. |
+| top_most | <ul><li>- [ ]</li></ul> | text | Set to "true" or "yes" to indicate that this screen should be top-most, set to "*false*" or "*no*" otherwise. The value is set to "*false*" if not explicitly specified. |
+| title | <ul><li>- [ ]</li></ul> | text | Specify the text ID of the text to be set as screen's title (This is the text ID, **not the text it-self**. See the [String table](#string-table) section below for more information). |
+| width | <ul><li>- [ ]</li></ul> | text | An integer number representing the width, in pixels, of the screen. |
+| height | <ul><li>- [ ]</li></ul> | text | An integer number representing the height, in pixels, of the screen. |
+|
+
+### Screen resource ###
+Screen resource is an HTML file with CSS supported describing the screen's components and layout. In general, the screen resource is quite flexible and can be in any form. However, each screen type requires some HTML control elements being rightly configured in order to properly work.
 
 ## String table ##
 
