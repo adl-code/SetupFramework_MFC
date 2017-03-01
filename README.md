@@ -128,7 +128,7 @@ In XML format:
 ### Screen types ###
 There are several predefined types of dialog:
 
-| Type | Description | Example |
+| Type | Description | Sample |
 | :--- | :--- | :--- |
 | **config** | Allowing user to change the setup configuration (create shortcuts, make system auto start ...). |
 | **eula** | Displaying End User License Agreement (EULA). |
@@ -201,6 +201,39 @@ Each setup screen (dialog) entry has the following attributes:
 Screen resource is an HTML file with CSS supported describing the screen's components and layout. In general, the screen resource is quite flexible and can be in any form. However, each screen type requires some HTML control elements being rightly configured in order to properly work.
 
 ## String table ##
+The string table stores strings used by the graphical user interface. Each string has its own unique ID and may contain multiple content entries, each entry represents text in a specified language. Below is an simple example:
+
+```xml
+<?xml version="1.0" ?>
+<text_table>
+    <!-- Each text has its own unique ID   -->
+    <text id="accept">
+        <!-- Each text may contain multiple text entries,
+        each entry represents text in a specified language -->
+        
+        <!-- Entry with no lang(language) attribute is a "default" entry,
+         it will be used in case no specific language provided or 
+         the text for the given language not found -->
+        <entry>Accept</entry>
+        
+        <!-- Entry represents text in Vietnamese -->
+        <entry lang="vn">Chấp nhận</entry>
+        
+        <!-- Entry represents text in American English -->
+        <entry lang="en_US">Accept</entry>
+    </text>
+    
+    <text id="yes">
+        <entry lang="vn">Có</entry>
+        <entry lang="en_US">Yes</entry>
+    </text>
+    
+    <text id="ok">
+        <entry>OK</entry>
+    </text>
+</text_table>
+
+```
 
 ## Online installers ##
 
