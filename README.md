@@ -32,10 +32,10 @@ There are 4 build configurations:
 
 | Configuration name | Has debug information? | Installer type |
 | :--- | :--- | :--- |
-| Debug_Online | :white_check_mark: | Download installer from *remote sites* |
-| Debug_Offline | :white_check_mark: | Drop installer from *embedded resource* |
-| Release_Online | :x: | Download installer from *remote sites* |
-| Release_Offline | :x: | Drop installer from *embedded resource* |
+| Debug_Online | :heavy_check_mark: | Download installer from *remote sites* |
+| Debug_Offline | :heavy_check_mark: | Drop installer from *embedded resource* |
+| Release_Online | | Download installer from *remote sites* |
+| Release_Offline | | Drop installer from *embedded resource* |
 
 ## Build instructions ##
 * Open [SetupProject/SetupProject.sln](SetupProject/SetupProject.sln).
@@ -188,13 +188,13 @@ Each setup screen (dialog) entry has the following attributes:
 
 | Attribute name | Required | Type | Meaning |
 | :--- | :--- | :--- | :--- |
-| id | <ul><li>- [x]</li></ul> | text | The screen type. It must be one of the [predefined types](#screen-types). |
-| resource | <ul><li>- [x]</li></ul> | text | The **resource name** of the [HTML file](#screen-resource) describing the screen's components and layout. |
-| no_border | <ul><li>- [ ]</li></ul> | text | Set to "*true*" or "*yes*" to indicate that this screen has no border, set to "*false*" or "*no*" otherwise. This value is set to "*false*" if not explicitly specified. |
-| top_most | <ul><li>- [ ]</li></ul> | text | Set to "true" or "yes" to indicate that this screen should be top-most, set to "*false*" or "*no*" otherwise. The value is set to "*false*" if not explicitly specified. |
-| title | <ul><li>- [ ]</li></ul> | text | Specify the text ID of the text to be set as screen's title (This is the text ID, **not the text it-self**. See the [String table](#string-table) section below for more information). |
-| width | <ul><li>- [ ]</li></ul> | text | An integer number representing the width, in pixels, of the screen. |
-| height | <ul><li>- [ ]</li></ul> | text | An integer number representing the height, in pixels, of the screen. |
+| id | :heavy_check_mark | text | The screen type. It must be one of the [predefined types](#screen-types). |
+| resource | :heavy_check_mark: | text | The **resource name** of the [HTML file](#screen-resource) describing the screen's components and layout. |
+| no_border | | text | Set to "*true*" or "*yes*" to indicate that this screen has no border, set to "*false*" or "*no*" otherwise. This value is set to "*false*" if not explicitly specified. |
+| top_most | | text | Set to "true" or "yes" to indicate that this screen should be top-most, set to "*false*" or "*no*" otherwise. The value is set to "*false*" if not explicitly specified. |
+| title | | text | Specify the text ID of the text to be set as screen's title (This is the text ID, **not the text it-self**. See the [String table](#string-table) section below for more information). |
+| width | | text | An integer number representing the width, in pixels, of the screen. |
+| height | | text | An integer number representing the height, in pixels, of the screen. |
 |
 
 ### Screen resource ###
